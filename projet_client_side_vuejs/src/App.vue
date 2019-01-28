@@ -1,18 +1,20 @@
 <template>
   <div id="app">
-    <router-link to="/">Home</router-link>
-    <router-link to="/other">Other</router-link>
-    <router-view/>
+    <Home/>
   </div>
 </template>
 
 <script>
+import Home from "./views/Home";
 export default {
   name: "App",
   data() {
     return {
       //
     };
+  },
+  components: {
+    Home
   }
 };
 </script>
