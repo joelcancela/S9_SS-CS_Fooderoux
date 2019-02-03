@@ -30,7 +30,6 @@
                     </v-layout>
                 </v-flex>
                 <v-flex xs2>
-                    <v-label>Comparer</v-label>
                     <v-btn>Comparer</v-btn>
                 </v-flex>
             </v-layout>

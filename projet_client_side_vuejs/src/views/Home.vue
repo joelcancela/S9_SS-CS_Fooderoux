@@ -28,17 +28,9 @@
                             <ItemsGrid/>
                         </v-flex>
                         <v-flex xs2>
-                            <v-layout column align-center>
-                                <v-flex xs2>
-                                   <v-img class="filterImg" width="40%" :src="require('../assets/filter.png')"/>
-                                   <v-label>Filtrer les résultats</v-label>
-                                </v-flex>
-                                <CriterionsDiv/>
-                            </v-layout>
+                            <Criterions/>
                         </v-flex>
                     </v-layout>
-
-
                 </v-flex>
             </v-layout>
         </v-content>
@@ -48,13 +40,13 @@
 <script>
 import Drawer from "../components/Drawer";
 import ItemsGrid from "../components/ItemsGrid";
-import CriterionsDiv from "../components/CriterionsDiv";
+import Criterions from "../components/Criterions";
 
 export default {
   components: {
     Drawer,
     ItemsGrid,
-    CriterionsDiv
+    Criterions
   },
   data: function() {
     return {
@@ -93,13 +85,5 @@ export default {
   max-height: 100vh;
   overflow: hidden;
   padding-bottom: 1px;
-}
-.filterImg {
-  margin-top: 5%;
-  margin-left: 25%;
-}
-.criterionsDiv {
-  width: 90%;
-  margin-top: 10px;
 }
 </style>
