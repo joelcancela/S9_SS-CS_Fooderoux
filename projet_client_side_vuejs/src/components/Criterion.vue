@@ -1,6 +1,6 @@
 <template>
-    <v-flex class="criterion" :style="dynamicStyle">
-        <v-layout @click="criterionClick()" row align-center justify-center>
+    <v-layout column justify-center class="criterion" :style="dynamicStyle">
+        <v-layout @click="criterionClick()" class="layoutRow" row align-center justify-center>
             <v-flex xs2 class="icons">
                 <v-img :src="imgPath"></v-img>
             </v-flex>
@@ -14,7 +14,7 @@
                 <v-icon v-else class="checkIcon" color="lightgrey">check_box_outline_blank</v-icon>
             </v-flex>
         </v-layout>
-    </v-flex>
+    </v-layout>
 </template>
 
 <script>
@@ -49,7 +49,6 @@ export default {
   border-radius: 5px;
   height: 60px;
   margin-bottom: 10px;
-  padding-top: 10px;
   padding-left: 10px;
 }
 .icons {
@@ -59,6 +58,7 @@ export default {
 .labelFlex {
   margin-left: 10px;
 }
-.checkIcons {
+.layoutRow {
+
 }
 </style>
