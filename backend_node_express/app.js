@@ -154,9 +154,51 @@ app.get('/api/foods/:itemId/score', function (req, res) {
           score_letter = "a";
         }
         res.send({ "score": score_letter });
+      } else {
+        res.status(404).send('Item id is incorrect !');
       }
     });
   } else {
     res.send({ score: "c" });
+  }
+})
+
+/*
+/* http://localhost:3000/api/foods/:itemid/imageLink
+*/
+app.get('/api/foods/:itemId/imageLink', function (req, res) {
+  if (req.params.itemId != null) {
+    collection.find({ _id: req.params.itemId }).toArray(function (err, docs) {
+      assert.equal(err, null);
+      if (docs[0] != undefined) {
+        let item = docs[0];
+        let url = "https://static.openfoodfacts.org/images/products/";
+        if (item.images.front_fr != undefined) {
+          if (item._id.length == 9) {
+            let str = item._id;
+            url += str.substring(0, 3) + "/" + str.substring(3, 6) + "/" + str.substring(6) + "/front_fr.";
+          } else if (item._id.length == 13) {
+            let str = item._id;
+            url += str.substring(0, 3) + "/" + str.substring(3, 6) + "/" + str.substring(6, 9) + "/" + str.substring(9) + "/front_fr.";
+          } else {
+            url += item._id + "/front_fr.";
+          }
+          if (item.images.front_fr.rev != undefined) {
+            url += item.images.front_fr.rev + ".";
+          }
+          if (item.images.front_fr.sizes != undefined) {
+            url += "full.jpg";
+          }
+          res.send({ link: url });
+        } else {
+          res.status(404).send('Could not find image link');
+        }
+
+      } else {
+        res.status(404).send('Item id is incorrect');
+      }
+    });
+  } else {
+    res.status(400).send([]);
   }
 })
