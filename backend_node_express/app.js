@@ -89,7 +89,7 @@ app.get('/api/foods', function (req, res) {
 })
 
 /*
-/* http://localhost:3000/api/food/00000
+/* http://localhost:3000/api/foods/00000
 */
 app.get('/api/foods/:itemId', function (req, res) {
   if (req.params.itemId != null) {
@@ -98,6 +98,65 @@ app.get('/api/foods/:itemId', function (req, res) {
       res.send(docs);
     });
   } else {
-    res.send({});
+    res.send([]);
+  }
+})
+
+/*
+/* http://localhost:3000/api/foods/:itemId/score
+*/
+app.get('/api/foods/:itemId/score', function (req, res) {
+  if (req.params.itemId != null) {
+    collection.find({ _id: req.params.itemId }).toArray(function (err, docs) {
+      assert.equal(err, null);
+      if (docs[0] != undefined) {
+        let scoreObj = docs[0];
+        let nutrition_grade = scoreObj["nutrition_grade_fr"] || "c";
+        let nb_unknown_ingredients = scoreObj["unknown_ingredients_n"] || 0;
+        let nb_ingredients_palm_oil_not_sure = scoreObj["ingredients_from_or_that_may_be_from_palm_oil_n"] || 0;
+        let nb_ing_palm_oil_sure = scoreObj["ingredients_from_palm_oil_n"] || 0;
+        let allergens_n = scoreObj["allergens_tags"] != undefined ? scoreObj["allergens_tags"].length : 0;
+        switch (nutrition_grade) {
+          case "a":
+            nutrition_grade = 20;
+            break;
+          case "b":
+            nutrition_grade = 15;
+            break;
+          case "c":
+            nutrition_grade = 10;
+            break;
+          case "d":
+            nutrition_grade = 5;
+            break;
+          case "e":
+            nutrition_grade = 0;
+            break;
+          default:
+            nutrition_grade = 10;
+            break;
+        }
+        let score = (nutrition_grade +
+          (15 - nb_unknown_ingredients) +
+          (15 - nb_ingredients_palm_oil_not_sure) +
+          (15 - nb_ing_palm_oil_sure) +
+          (10 - allergens_n)) / 5;
+        let score_letter = "d";
+        if (score >= 0 && score < 5) {
+          score_letter = "e";
+        } else if (score >= 5 && score < 10) {
+          score_letter = "d";
+        } else if (score >= 10 && score < 13) {
+          score_letter = "c";
+        } else if (score >= 13 && score < 17) {
+          score_letter = "b";
+        } else if (score >= 17) {
+          score_letter = "a";
+        }
+        res.send({ "score": score_letter });
+      }
+    });
+  } else {
+    res.send({ score: "c" });
   }
 })
