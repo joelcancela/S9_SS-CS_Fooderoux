@@ -10,7 +10,7 @@
                                 shrink
                                 pa-1
                         >
-                            <v-card class="card">
+                            <v-card @click="dialogClicked()" class="card">
                                 <v-img
                                         class="image"
                                         src="https://images-na.ssl-images-amazon.com/images/I/910uahYmmPL._SY355AA355_PIbundle-40,TopRight,0,0_AA355_SH20_.jpg"
@@ -21,12 +21,13 @@
                                     <v-flex xs9 class="itemName">
                                         <v-label>Chips lays</v-label>
                                     </v-flex>
-                                    <v-flex xs3>
+                                    <v-flex xs3 v-on:click.stop>
                                         <v-checkbox @change="itemSelect" v-model="checkboxes[n]"/>
                                     </v-flex>
                                 </v-layout>
                             </v-card>
                         </v-flex>
+                        <ItemModal ref="ItemModal" v-on:closeDialog="dialogClicked()" :dialog="dialog"/>
                     </v-layout>
                 </v-flex>
                 <v-flex xs2>
@@ -40,10 +41,12 @@
 
 <script>
 import ComparisonModal from "./ComparisonModal";
+import ItemModal from "./ItemModal";
 export default {
   name: "ItemsGrid",
   components: {
-    ComparisonModal
+    ComparisonModal,
+    ItemModal
   },
   data: function() {
     return {
@@ -57,7 +60,8 @@ export default {
         }
       ],
       checkboxes: this.initCheckboxes(),
-      selectedItems: 0
+      selectedItems: 0,
+      dialog: false
     };
   },
   methods: {
@@ -70,6 +74,9 @@ export default {
     },
     itemSelect(newValue) {
       newValue ? this.selectedItems++ : this.selectedItems--;
+    },
+    dialogClicked() {
+      this.$refs.ItemModal.dialogClicked();
     }
   }
 };

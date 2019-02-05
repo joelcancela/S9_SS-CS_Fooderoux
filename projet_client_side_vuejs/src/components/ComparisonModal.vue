@@ -94,7 +94,7 @@ export default {
 }
 .values {
   width: -moz-available;
-  width: "-webkit-fill-available";
+  width: -webkit-fill-available;
   border-right: white solid 1px;
   display: flex;
   flex-direction: row;
