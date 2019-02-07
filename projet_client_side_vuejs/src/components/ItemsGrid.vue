@@ -10,7 +10,7 @@
                                 shrink
                                 pa-1
                         >
-                            <v-card class="card">
+                            <v-card @click="dialogClicked()" class="card">
                                 <v-img
                                         class="image"
                                         src="https://images-na.ssl-images-amazon.com/images/I/910uahYmmPL._SY355AA355_PIbundle-40,TopRight,0,0_AA355_SH20_.jpg"
@@ -21,16 +21,17 @@
                                     <v-flex xs9 class="itemName">
                                         <v-label>Chips lays</v-label>
                                     </v-flex>
-                                    <v-flex xs3>
-                                        <v-checkbox/>
+                                    <v-flex xs3 v-on:click.stop>
+                                        <v-checkbox @change="itemSelect" v-model="checkboxes[n]"/>
                                     </v-flex>
                                 </v-layout>
                             </v-card>
                         </v-flex>
+                        <ItemModal ref="ItemModal" v-on:closeDialog="dialogClicked()" :dialog="dialog"/>
                     </v-layout>
                 </v-flex>
-                <v-flex xs2>
-                    <v-btn>Comparer</v-btn>
+                <v-flex xs2 class="comparisonButton">
+                    <ComparisonModal :buttonDisabled="selectedItems < 2" :items="results" :itemsSelected="selectedItems"/>
                 </v-flex>
             </v-layout>
 
@@ -39,33 +40,74 @@
 </template>
 
 <script>
-    export default {
-        name: "ItemsGrid",
+import ComparisonModal from "./ComparisonModal";
+import ItemModal from "./ItemModal";
+export default {
+  name: "ItemsGrid",
+  components: {
+    ComparisonModal,
+    ItemModal
+  },
+  data: function() {
+    return {
+      results: [
+        {
+          path:
+            "https://images-na.ssl-images-amazon.com/images/I/910uahYmmPL._SY355AA355_PIbundle-40,TopRight,0,0_AA355_SH20_.jpg",
+          price: 2,
+          name: "chips lays",
+          score: "A"
+        }
+      ],
+      checkboxes: this.initCheckboxes(),
+      selectedItems: 0,
+      dialog: false
+    };
+  },
+  methods: {
+    initCheckboxes() {
+      let array = [];
+      for (let i = 0; i < 9; i++) {
+        array.push(false);
+      }
+      return array;
+    },
+    itemSelect(newValue) {
+      newValue ? this.selectedItems++ : this.selectedItems--;
+    },
+    dialogClicked() {
+      this.$refs.ItemModal.dialogClicked();
     }
+  }
+};
 </script>
 
 <style scoped>
-    .card {
-        width: 148px;
-        padding-top: 5px;
-        padding-left: 5px;
-        padding-right: 5px;
-    }
+.card {
+  width: 148px;
+  padding-top: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
 
-    .image {
-        margin-top: 10px;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
+.image {
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
 
-    .itemName {
-        margin-left: 10px;
-    }
-    .mainContainer {
-        padding: 5px;
-    }
-    .list {
-        max-height: 63%;
-        overflow-y: auto;
-    }
+.itemName {
+  margin-left: 10px;
+}
+.mainContainer {
+  padding: 5px;
+}
+.list {
+    max-height: 75vh;
+    overflow-y: auto;
+}
+.comparisonButton {
+    height: 5vh;
+    margin-top: 10px;
+}
 </style>
