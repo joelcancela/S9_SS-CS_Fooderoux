@@ -11,6 +11,12 @@ const collection_name = 'france';
 // MongoDB client
 var collection, db;
 
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 app.listen(3000, function () {
   console.log('Food server listening on port 3000!')
   const client = new MongoClient(url);
@@ -201,4 +207,8 @@ app.get('/api/foods/:itemId/imageLink', function (req, res) {
   } else {
     res.status(400).send([]);
   }
+})
+
+app.post('/api/recipe/parse', function (req, res) {
+
 })
