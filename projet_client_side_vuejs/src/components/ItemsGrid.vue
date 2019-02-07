@@ -30,7 +30,7 @@
                         <ItemModal ref="ItemModal" v-on:closeDialog="dialogClicked()" :dialog="dialog"/>
                     </v-layout>
                 </v-flex>
-                <v-flex xs2>
+                <v-flex xs2 class="comparisonButton">
                     <ComparisonModal :buttonDisabled="selectedItems < 2" :items="results" :itemsSelected="selectedItems"/>
                 </v-flex>
             </v-layout>
@@ -103,7 +103,11 @@ export default {
   padding: 5px;
 }
 .list {
-  max-height: 63%;
-  overflow-y: auto;
+    max-height: 75vh;
+    overflow-y: auto;
+}
+.comparisonButton {
+    height: 5vh;
+    margin-top: 10px;
 }
 </style>
