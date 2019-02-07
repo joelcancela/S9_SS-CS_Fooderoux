@@ -1,26 +1,37 @@
 <template>
-    <v-dialog max-width="900px" max-height="800px" v-model="dialog">
+    <v-dialog max-width="900px" max-height="700px" v-model="dialog">
         <v-card flat>
             <v-card-title>
                 <v-icon @click="closeDialog" color="red" class="closeIcon">close</v-icon>
             </v-card-title>
             <v-card-text>
                 <v-layout column class="mainCol" align-center justify-center>
-                    <v-flex xs3 class="productInfos row">
+                    <v-flex xs4 class="productInfos row">
                         <v-flex xs3/>
                         <v-flex xs3 class="headerFlex">
                             <v-label>{{item.name}}</v-label>
                         </v-flex>
                         <v-flex xs3 class="headerFlex">
-                            <v-img max-width="120px" :src="item.path"></v-img>
+                            <v-img max-width="110px" :src="item.path"></v-img>
                         </v-flex>
                         <v-flex xs3 class="headerFlex">
-                            <v-img :src="require('../assets/n'+item.nutrition_grade_fr.toLowerCase()+'.png')"></v-img>
+                            <v-flex class="score">
+                                <v-img width="70px" :src="require('../assets/n'+item.nutrition_grade_fr.toLowerCase()+'.png')"></v-img>
+                                <v-flex class="labels">
+                                    <v-label text-center>Nutriscore</v-label>
+                                </v-flex>
+                            </v-flex>
+                            <v-flex class="score">
+                                <v-img width="70px" :src="require('../assets/n'+item.nutrition_grade_fr.toLowerCase()+'.png')"></v-img>
+                                <v-flex class="labels">
+                                    <v-label text-center>Score</v-label>
+                                </v-flex>
+                            </v-flex>
                         </v-flex>
                         <v-flex xs3/>
                     </v-flex>
 
-                    <v-flex xs3 class="prices row">
+                    <v-flex xs4 class="prices row">
                         <v-card class="shopIcons" v-for="(price, index) in item.prices" :key="index">
                             <v-flex xs8>
                                 <v-img width="60px" style="margin: 5px" :src="require('../assets/'+price.shop+'.png')"/>
@@ -33,12 +44,8 @@
                         </v-card>
                     </v-flex>
 
-                    <v-flex xs3 class="ingredients row">
-                        <v-label v-for="(ingredient, index) in item.ingredients" :key="index">{{ingredient.text + ","}}</v-label>
-                    </v-flex>
-
-                    <v-flex xs3 class="row">
-                        <v-label>Nutrition facts</v-label>
+                    <v-flex xs4 class="ingredients row">
+                        <v-chip text-color="white" color="primary" disabled v-for="(ingredient, index) in item.ingredients" :key="index">{{ingredient.text}}</v-chip>
                     </v-flex>
                 </v-layout>
             </v-card-text>
@@ -95,6 +102,7 @@ export default {
 }
 .headerFlex {
     display: flex;
+    flex-direction: row;
     justify-content: center;
     align-items: center;
     height: 100%;
@@ -128,10 +136,21 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-bottom: grey solid;
 }
 .closeIcon {
     position: absolute;
     right: 0;
+}
+.score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.labels {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 </style>

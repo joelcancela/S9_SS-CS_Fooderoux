@@ -5,11 +5,13 @@
             <v-label>Trier les résultats</v-label>
         </v-flex>
         <v-flex xs10 class="criterionsDiv">
-            <v-layout column>
+            <v-radio-group class="radiosGroup" v-model="radios" column>
+                <Criterion name="aucun" :imgPath="require('../assets/name.png')"></Criterion>
                 <Criterion name="nom" :imgPath="require('../assets/name.png')"/>
                 <Criterion name="prix" :imgPath="require('../assets/price.png')"/>
                 <Criterion name="nutriscore" :imgPath="require('../assets/nutriscore.png')"/>
-            </v-layout>
+                <Criterion name="score" :imgPath="require('../assets/nutriscore.png')"/>
+            </v-radio-group>
         </v-flex>
     </v-layout>
 
@@ -23,6 +25,11 @@ export default {
   name: "Criterions",
   components: {
     Criterion
+  },
+  data: function () {
+      return {
+          radios: 'aucun'
+      }
   }
 };
 </script>
@@ -35,5 +42,11 @@ export default {
 .criterionsDiv {
   width: 90%;
   margin-top: 10px;
+}
+.radiosGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
 }
 </style>
