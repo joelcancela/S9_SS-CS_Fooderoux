@@ -1,6 +1,6 @@
 <template>
-    <v-layout class="layoutRow" row align-center justify-center>
-        <v-radio :label="name" :value="name"/>
+    <v-layout row align-center justify-content>
+        <v-radio class="radio" :label="name" :value="name"/>
         <v-flex xs2 class="icons">
             <v-img width="30px" :src="imgPath"></v-img>
         </v-flex>
@@ -18,19 +18,8 @@
 </script>
 
 <style scoped>
-    .criterion {
-        border-radius: 5px;
-        height: 60px;
-        margin-bottom: 10px;
-        padding-left: 10px;
-    }
-
-    .icons {
-        padding-bottom: 5px;
-        margin-right: 5px;
-    }
-
-    .layoutRow {
-
+    .radio {
+        margin: 5px 10px 5px 10px!important;
+        width: 100%;
     }
 </style>
