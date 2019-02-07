@@ -1,6 +1,7 @@
 const express = require('express')
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
+const bodyParser = require('body-parser');
 const app = express()
 // Connection URL
 const url = 'mongodb://users:J1ovddMPAbI' + encodeURIComponent('=') + '@ds163054.mlab.com:63054/db-server-side-food';
@@ -11,11 +12,12 @@ const collection_name = 'france';
 // MongoDB client
 var collection, db;
 
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  next();
-});
+app.use(bodyParser.json());
+// app.use(function (req, res, next) {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+//   next();
+// });
 
 app.listen(3000, function () {
   console.log('Food server listening on port 3000!')
@@ -214,5 +216,32 @@ app.get('/api/foods/:itemId/imageLink', function (req, res) {
 })
 
 app.post('/api/recipe/parse', function (req, res) {
-  console.log(req.body);
+  let result = {}; // JSON answer
+  let data = req.body;
+  let keys = Object.keys(data);
+  let filterObj = {};
+  if (keys.includes("filter")) {
+    let regFilterObj = { $not: { $elemMatch: { $regex: ".*" + data["filter"] + ".*", $options: 'i' } } }
+    filterObj = { additives_tags: regFilterObj, additives_original_tags: regFilterObj }
+  }
+  keys.forEach(function (key) {
+    if (key != "filter") {
+      let reg = new RegExp(".*" + data[key] + ".*", "i");
+      collection.find(
+        {
+          $and: [
+            { $or: [{ product_name: reg }, { product_name_fr: reg }] },
+            { $or: [filterObj] }]
+        }
+      ).toArray(function (err, docs) {
+        if (err != null) {
+          console.log(err);
+        }
+        result[key] = docs;
+        if (keys.indexOf(key) == keys.length - 1 || (keys.includes("filter") && keys.indexOf(key) == keys.length - 2)) {
+          res.send(result);
+        }
+      });
+    }
+  })
 })
