@@ -11,7 +11,7 @@ const collection_name = 'france';
 // MongoDB client
 var collection, db;
 
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
   next();
@@ -21,10 +21,13 @@ app.listen(3000, function () {
   console.log('Food server listening on port 3000!')
   const client = new MongoClient(url);
   client.connect(function (err) {
-    assert.equal(null, err);
-    console.log("Connected successfully to server");
-    db = client.db(dbName);
-    collection = db.collection(collection_name);
+    if (err != null) {
+      console.warn("Failed to connect to MongoDB.");
+    } else {
+      console.log("Connected successfully to server");
+      db = client.db(dbName);
+      collection = db.collection(collection_name);
+    }
   });
 })
 
@@ -67,10 +70,11 @@ app.get('/api/foods', function (req, res) {
     criterias.push({ stores: reg });
   }
   let reg = new RegExp("[^\s]*", "i");
+  let regArray = { $exists: true, $ne: [] };
   if (req.query.nutrition_score != null) {
     criterias.push({ $or: [{ nutrition_grade_fr: reg, nutrition_grades: reg }] });
   } if (req.query.ingredients != null) {
-    criterias.push({ $or: [{ ingredients_text_fr: reg, ingredients_text: reg, ingredients_tags: reg, ingredients: reg }] });
+    criterias.push({ $or: [{ ingredients_text_fr: reg, ingredients_text: reg, ingredients_tags: regArray, ingredients: regArray }] });
   } if (req.query.additives != null) {
     criterias.push({ $or: [{ additives: reg, additives_original_tags: reg }] });
   } if (req.query.nutriments != null) {
@@ -210,5 +214,5 @@ app.get('/api/foods/:itemId/imageLink', function (req, res) {
 })
 
 app.post('/api/recipe/parse', function (req, res) {
-
+  console.log(req.body);
 })
