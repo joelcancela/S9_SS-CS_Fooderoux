@@ -23,7 +23,7 @@ app.use(bodyParser.json());
 // });
 
 app.listen(port, function () {
-  console.log('Food server listening on port '+port+'!')
+  console.log('Food server listening on port ' + port + '!')
   const client = new MongoClient(url);
   client.connect(function (err) {
     if (err != null) {
@@ -97,7 +97,23 @@ app.get('/api/foods', function (req, res) {
       searchObject["$and"] = criterias;
     }
   }
-  collection.find(searchObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
+  let sortObject = { _id: 1 };
+  if (req.query.sortBy != null && req.query.sortBy != "") {
+    switch (req.query.sortB) {
+      case "name":
+        sortObject = { product_name_fr: 1 };
+        break;
+      case "price":
+        //TODO: add later when price are implemented
+        break;
+      case "nutriscore":
+        sortObject = { nutrition_grade_fr: 1 };
+        break;
+      default:
+        break;
+    }
+  }
+  collection.find(searchObject).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
     assert.equal(err, null);
     res.send(docs);
   });
