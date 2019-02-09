@@ -12,3 +12,6 @@ ngrok http 8080
 npm run dev
 
 Then go to your mobile web browser and go to the url given by ngrok
+
+
+npm run-script deploy

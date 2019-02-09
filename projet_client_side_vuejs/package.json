@@ -5,7 +5,9 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "start": "vue-cli-service serve",
+    "deploy": "cd ../ & git subtree push --prefix projet_client_side_vuejs heroku-fe master || true"
   },
   "dependencies": {
     "vue": "^2.5.22",

@@ -13,6 +13,7 @@ const dbName = 'db-server-side-food';
 const collection_name = 'france';
 // MongoDB client
 var collection, db;
+var port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 // app.use(function (req, res, next) {
@@ -21,8 +22,8 @@ app.use(bodyParser.json());
 //   next();
 // });
 
-app.listen(3000, function () {
-  console.log('Food server listening on port 3000!')
+app.listen(port, function () {
+  console.log('Food server listening on port '+port+'!')
   const client = new MongoClient(url);
   client.connect(function (err) {
     if (err != null) {
