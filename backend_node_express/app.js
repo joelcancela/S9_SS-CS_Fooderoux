@@ -155,7 +155,7 @@ app.get('/api/foods/:itemId', function (req, res) {
  * Request: [GET] http://localhost:3000/api/stores/search?region=us
  * Response:
  * {
- *
+     "stores": [{}, {}, ...]
  * }
  */
 app.get('/api/stores/search', function (req, res) {
