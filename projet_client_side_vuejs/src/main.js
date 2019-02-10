@@ -3,8 +3,15 @@ import "./plugins/vuetify";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import * as VueGoogleMaps from "vue2-google-maps";
 
 Vue.config.productionTip = false;
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: "AIzaSyCThqJaPmVNj_GCPyYcSI_p4_Ewbe7H9Ng",
+    libraries: "places"
+  }
+});
 
 new Vue({
   router,

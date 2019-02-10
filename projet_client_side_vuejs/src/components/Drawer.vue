@@ -22,6 +22,16 @@
                         </v-flex>
                     </v-layout>
                 </v-flex>
+                <v-flex class="item">
+                    <v-layout row @click="emitIcon('map')" align-center justify-center>
+                        <v-flex xs4>
+                            <v-img class="catImg" width="60%" :src="require('../assets/store.png')"></v-img>
+                        </v-flex>
+                        <v-flex xs8>
+                            <v-list-tile-title class="catName">Magasins</v-list-tile-title>
+                        </v-flex>
+                    </v-layout>
+                </v-flex>
             </v-layout>
         </v-content>
     </v-app>
