@@ -1,5 +1,6 @@
 const express = require('express')
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId = require('mongodb').ObjectId;
 const assert = require('assert');
 const bodyParser = require('body-parser');
 // http client
@@ -11,8 +12,9 @@ const url = 'mongodb://users:J1ovddMPAbI' + encodeURIComponent('=') + '@ds163054
 const dbName = 'db-server-side-food';
 // Collection name
 const collection_name = 'france';
+const collection_recipes_name = 'recipes';
 // MongoDB client
-var collection, db;
+var collection, collection_recipes, db;
 var port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
@@ -29,9 +31,10 @@ app.listen(port, function () {
     if (err != null) {
       console.warn("Failed to connect to MongoDB.");
     } else {
-      console.log("Connected successfully to server");
       db = client.db(dbName);
       collection = db.collection(collection_name);
+      collection_recipes = db.collection(collection_recipes_name);
+      console.log("Connected successfully to server");
     }
   });
 });
@@ -99,7 +102,7 @@ app.get('/api/foods', function (req, res) {
   }
   let sortObject = { _id: 1 };
   if (req.query.sortBy != null && req.query.sortBy != "") {
-    switch (req.query.sortB) {
+    switch (req.query.sortBy) {
       case "name":
         sortObject = { product_name_fr: 1 };
         break;
@@ -286,7 +289,7 @@ app.get('/api/foods/:itemId/imageLink', function (req, res) {
   }
 })
 
-app.post('/api/recipe/parse', function (req, res) {
+app.post('/api/recipes/parse', function (req, res) {
   let result = {}; // JSON answer
   let data = req.body;
   let keys = Object.keys(data);
@@ -315,4 +318,73 @@ app.post('/api/recipe/parse', function (req, res) {
       });
     }
   })
+})
+
+app.get('/api/recipes', function (req, res) {
+  let pagesize = 50;
+  let n = 1;
+  if (req.query.limit != null) {
+    pagesize = parseInt(req.query.limit);
+  }
+  if (req.query.page != null && req.query.page > 0) {
+    n = parseInt(req.query.page);
+  }
+  let sortObject = { _id: 1 };
+  if (req.query.sortBy != null && req.query.sortBy != "") {
+    switch (req.query.sortBy) {
+      case "name":
+        sortObject = { name: 1 };
+        break;
+      case 'date':
+        sortObject = { date: 1 };
+        break;
+      default:
+        break;
+    }
+  }
+  collection_recipes.find({}).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
+    assert.equal(err, null);
+    res.send(docs);
+  });
+})
+
+app.post('/api/recipes', function (req, res) {
+  let data = req.body;
+  try {
+    let result = collection_recipes.insertOne({ name: data.name, ingredients: data.ingredients, date: Date.now(), comments: [] })
+    res.status(200).send(result);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+})
+
+app.get('/api/recipes/:recipeId', function (req, res) {
+  let id = req.params.recipeId;
+  collection_recipes.find(ObjectId(id)).toArray(function (err, docs) {
+    if (err != null) {
+      console.log(err);
+      res.status(400).send(err);
+    } else {
+      res.send(docs);
+    }
+  });
+})
+
+app.post('/api/recipes/:recipeId/comment', function (req, res) {
+  let data = req.body.comment;
+  let id = req.params.recipeId;
+  collection_recipes.find(ObjectId(id)).toArray(function (err, docs) {
+    if (err != null) {
+      console.log(err);
+      res.status(400).send(err);
+    } else {
+      collection_recipes.updateOne(
+        { _id: ObjectId(id) },
+        {
+          $push: { "comments": data }
+        }
+      )
+      res.status(200).send({});
+    }
+  });
 })
