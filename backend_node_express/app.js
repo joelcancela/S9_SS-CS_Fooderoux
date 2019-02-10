@@ -204,11 +204,6 @@ app.get('/api/foods/:itemId/pricing', function (req, res) {
 
     let item = result_collection[0];
 
-    // Not found
-    if (result_collection[0] === undefined) {
-      res.status(404).send();
-      return;
-    }
     // No pricing yet
     if (item.pricing === undefined) {
       res.send(
@@ -227,6 +222,73 @@ app.get('/api/foods/:itemId/pricing', function (req, res) {
           "item": {
             "_id": itemId,
             "pricing": item.pricing
+          }
+        }
+    );
+  });
+});
+
+/**
+ * Given an :itemId, fetch the average price
+ *
+ * @author: Nikita ROUSSEAU
+ *
+ * Request: [GET] http://localhost:3000/api/foods/0000000027205/price
+ * Response:
+ * {
+ *    "item": {
+ *      "_id": "0000000027205",
+ *      "price": 10.5
+ *    }
+ * }
+ */
+app.get('/api/foods/:itemId/price', function (req, res) {
+  let itemId;
+  let item;
+  let price = 0.0;
+
+  if (req.params.itemId == null) {
+    res.status(400).send("Invalid :itemId, :itemId must be an Integer.");
+    return;
+  }
+
+  itemId = req.params.itemId;
+
+  collection.find({ _id: itemId }).toArray(function (err, result_collection) {
+    assert.equal(err, null);
+
+    // Not found
+    if (result_collection[0] === undefined) {
+      res.status(404).send();
+      return;
+    }
+
+    item = result_collection[0];
+
+    // No pricing yet
+    if (item.pricing === undefined) {
+      res.send(
+          {
+            "item": {
+              "_id": itemId,
+              "price": price
+            }
+          }
+      );
+      return;
+    }
+
+    item.pricing.forEach(function (item) {
+      price += parseInt(item.price);
+    });
+    price = price / item.pricing.length;
+
+    // 200 OK
+    res.send(
+        {
+          "item": {
+            "_id": itemId,
+            "price": price
           }
         }
     );
