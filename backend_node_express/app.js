@@ -54,7 +54,7 @@ app.get('/api/stats', function (req, res) {
   });
 });
 /*
-/* http://localhost:3000/api/food?page=1&limit=2
+/* http://localhost:3000/api/foods?page=1&limit=2
 */
 app.get('/api/foods', function (req, res) {
   let pagesize = 50;
@@ -106,15 +106,21 @@ app.get('/api/foods', function (req, res) {
       case "name":
         sortObject = { product_name_fr: 1 };
         break;
-      case "price":
-        //TODO: add later when price are implemented
-        break;
       case "nutriscore":
         sortObject = { nutrition_grade_fr: 1 };
         break;
       default:
         break;
     }
+  }
+  if (req.query.sortBy == "price") {//TODO: to verify after price implementation
+    collection.aggregate([
+      { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
+      { $sort: { currentPrice: -1 } }
+    ]).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
+      assert.equal(err, null);
+      res.send(docs);
+    });
   }
   collection.find(searchObject).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
     assert.equal(err, null);
