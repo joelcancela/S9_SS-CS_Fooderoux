@@ -60,7 +60,7 @@ app.get('/api/stats', function (req, res) {
 /*
 /* http://localhost:3000/api/foods?page=1&limit=2
 */
-app.get('/api/foods', function (req, res) {
+app.get('/api/foods', function (req, res, next) {
   let pagesize = 50;
   let n = 1;
   if (req.query.limit != null) {
@@ -113,18 +113,19 @@ app.get('/api/foods', function (req, res) {
       case "nutriscore":
         sortObject = { nutrition_grade_fr: 1 };
         break;
+      case "price":
+        collection.aggregate([
+          { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
+          { $sort: { "currentPrice.price": -1 } },
+          { $limit: pagesize },
+          { $skip: pagesize * (n - 1) }
+        ]).toArray(function (err, docs) {
+          res.send(docs);
+        });
+        return;
       default:
         break;
     }
-  }
-  if (req.query.sortBy == "price") {//TODO: to verify after price implementation
-    collection.aggregate([
-      { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
-      { $sort: { currentPrice: -1 } }
-    ]).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
-      assert.equal(err, null);
-      res.send(docs);
-    });
   }
   collection.find(searchObject).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
     assert.equal(err, null);
@@ -147,18 +148,34 @@ app.get('/api/foods/:itemId', function (req, res) {
 });
 
 /**
- * Stores search engine with <country_code> filter (ISO)
+ * Given an :itemId, filter depending on the criteria
+ *
+ * @author: Nikita ROUSSEAU
+ *
+ * Request: [GET] http://localhost:3000/api/foods/0000000027205/search
+ * Response:
+ * {
+ * }
+ */
+app.get('/api/foods/:itemId/search', function (req, res) {
+  // TODO : implement "searching for items by price can be limited to a given store"
+});
+
+/**
+ * Given a <country_code> (ISO), fetch all known stores
  *
  * @author: Nikita ROUSSEAU
  *
  * Request: [GET] http://localhost:3000/api/stores/search?region=us
  * Response:
  * {
- *
+     "stores": [{}, {}, ...]
  * }
  */
 app.get('/api/stores/search', function (req, res) {
   let country_code;
+  let known_stores = [];
+  let stores = [];
 
   if (req.query.region == null || String(req.query.region).length !== 2) {
     res.status(400).send("Invalid country_code, must be coded on two letters.");
@@ -167,7 +184,43 @@ app.get('/api/stores/search', function (req, res) {
 
   country_code = String(req.query.region);
 
-  // TODO: implement search stores by region
+  // All items with at leat one store in the selected country
+  collection.find({'pricing.store.country_code': country_code}).toArray(function (err, result_collection) {
+    assert.equal(err, null);
+
+    if (result_collection[0] === undefined) {
+      res.status(404).send();
+      return;
+    }
+
+    // Pack stores
+    result_collection.forEach(function (item) {
+      item.pricing.forEach(function(price) {
+        let store = price["store"];
+        // Filter regions here
+        if (store.country_code !== country_code) {
+          return; // Continue
+        }
+
+        let store_hash =
+            String(store.storeId) +
+            String(store.name) +
+            String(store.location.coordinates[0]) +
+            String(store.location.coordinates[1]);
+        if (!known_stores.includes(store_hash)) {
+          stores.push(store);
+          known_stores.push(store_hash)
+        }
+      });
+    });
+
+    // 200 OK
+    res.send(
+        {
+          "stores": stores
+        }
+    );
+  });
 });
 
 /**
@@ -204,11 +257,6 @@ app.get('/api/foods/:itemId/pricing', function (req, res) {
 
     let item = result_collection[0];
 
-    // Not found
-    if (result_collection[0] === undefined) {
-      res.status(404).send();
-      return;
-    }
     // No pricing yet
     if (item.pricing === undefined) {
       res.send(
@@ -227,6 +275,73 @@ app.get('/api/foods/:itemId/pricing', function (req, res) {
           "item": {
             "_id": itemId,
             "pricing": item.pricing
+          }
+        }
+    );
+  });
+});
+
+/**
+ * Given an :itemId, fetch the average price
+ *
+ * @author: Nikita ROUSSEAU
+ *
+ * Request: [GET] http://localhost:3000/api/foods/0000000027205/price
+ * Response:
+ * {
+ *    "item": {
+ *      "_id": "0000000027205",
+ *      "price": 10.5
+ *    }
+ * }
+ */
+app.get('/api/foods/:itemId/price', function (req, res) {
+  let itemId;
+  let item;
+  let price = 0.0;
+
+  if (req.params.itemId == null) {
+    res.status(400).send("Invalid :itemId, :itemId must be an Integer.");
+    return;
+  }
+
+  itemId = req.params.itemId;
+
+  collection.find({ _id: itemId }).toArray(function (err, result_collection) {
+    assert.equal(err, null);
+
+    // Not found
+    if (result_collection[0] === undefined) {
+      res.status(404).send();
+      return;
+    }
+
+    item = result_collection[0];
+
+    // No pricing yet
+    if (item.pricing === undefined) {
+      res.send(
+          {
+            "item": {
+              "_id": itemId,
+              "price": price
+            }
+          }
+      );
+      return;
+    }
+
+    item.pricing.forEach(function (item) {
+      price += parseInt(item.price);
+    });
+    price = price / item.pricing.length;
+
+    // 200 OK
+    res.send(
+        {
+          "item": {
+            "_id": itemId,
+            "price": price
           }
         }
     );
@@ -319,20 +434,20 @@ app.post('/api/foods/:itemId/pricing', function (req, res) {
       "store": store
     });
     collection.updateOne(
-        { _id: itemId },
-        {
-          $set: { 'pricing': pricing_collection }
-        }
+      { _id: itemId },
+      {
+        $set: { 'pricing': pricing_collection }
+      }
     );
 
     // 201 Created
     res.status(201).send(
-        {
-          "item": {
-            "_id": itemId,
-            "pricing": pricing_collection
-          }
+      {
+        "item": {
+          "_id": itemId,
+          "pricing": pricing_collection
         }
+      }
     );
   });
 });
