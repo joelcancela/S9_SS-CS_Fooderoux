@@ -8,11 +8,6 @@
 import Home from "./views/Home";
 export default {
   name: "App",
-  data() {
-    return {
-      //
-    };
-  },
   components: {
     Home
   }

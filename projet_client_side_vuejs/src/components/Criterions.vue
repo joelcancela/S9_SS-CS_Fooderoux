@@ -21,7 +21,7 @@
         </v-flex>
 
         <v-flex xs5 class="criterionFilter">
-            <v-text-field class="selector" label="Quantité"></v-text-field>
+            <v-text-field class="selector" label="Quantité" color="#00cc00"></v-text-field>
             <v-select class="selector" :items="stores" label="Magasin" solo></v-select>
             <v-select class="selector" :items="nutriscores" label="Nutriscore" solo></v-select>
             <v-select class="selector" :items="scores" label="Score" solo></v-select>

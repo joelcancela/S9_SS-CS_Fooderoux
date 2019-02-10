@@ -38,38 +38,31 @@
 </template>
 
 <script>
-export default {
-  name: "Drawer",
-  methods: {
-    emitIcon(name) {
-      this.$emit(name);
-    }
-  }
-};
+    export default {
+        name: "Drawer",
+        methods: {
+            emitIcon(name) {
+                this.$emit(name);
+            }
+        }
+    };
 </script>
 
 <style scoped>
-.item {
-  padding-bottom: 5%;
-  padding-top: 5%;
-  border-bottom-style: solid;
-  border-bottom-color: white;
-  background-color: darkorange;
-}
-.icon {
-  margin-right: 5%;
-}
-.list {
-  padding: 0 !important;
-}
-.catName {
-    color: white;
-    font-size: 1.5em;
-}
-.catImg {
-    margin-left: 15px;
-}
-.navigationContainer {
-    background-color: orange;
-}
+    .item {
+        padding-bottom: 5%;
+        padding-top: 5%;
+        border-bottom-style: solid;
+        border-bottom-color: white;
+    }
+    .catName {
+        color: white;
+        font-size: 1.5em;
+    }
+    .catImg {
+        margin-left: 15px;
+    }
+    .navigationContainer {
+        background-color: #00cc00;
+    }
 </style>
