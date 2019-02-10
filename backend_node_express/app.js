@@ -60,7 +60,7 @@ app.get('/api/stats', function (req, res) {
 /*
 /* http://localhost:3000/api/foods?page=1&limit=2
 */
-app.get('/api/foods', function (req, res) {
+app.get('/api/foods', function (req, res, next) {
   let pagesize = 50;
   let n = 1;
   if (req.query.limit != null) {
@@ -113,18 +113,19 @@ app.get('/api/foods', function (req, res) {
       case "nutriscore":
         sortObject = { nutrition_grade_fr: 1 };
         break;
+      case "price":
+        collection.aggregate([
+          { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
+          { $sort: { "currentPrice.price": -1 } },
+          { $limit: pagesize },
+          { $skip: pagesize * (n - 1) }
+        ]).toArray(function (err, docs) {
+          res.send(docs);
+        });
+        return;
       default:
         break;
     }
-  }
-  if (req.query.sortBy == "price") {//TODO: to verify after price implementation
-    collection.aggregate([
-      { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
-      { $sort: { currentPrice: -1 } }
-    ]).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
-      assert.equal(err, null);
-      res.send(docs);
-    });
   }
   collection.find(searchObject).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
     assert.equal(err, null);
@@ -419,20 +420,20 @@ app.post('/api/foods/:itemId/pricing', function (req, res) {
       "store": store
     });
     collection.updateOne(
-        { _id: itemId },
-        {
-          $set: { 'pricing': pricing_collection }
-        }
+      { _id: itemId },
+      {
+        $set: { 'pricing': pricing_collection }
+      }
     );
 
     // 201 Created
     res.status(201).send(
-        {
-          "item": {
-            "_id": itemId,
-            "pricing": pricing_collection
-          }
+      {
+        "item": {
+          "_id": itemId,
+          "pricing": pricing_collection
         }
+      }
     );
   });
 });
