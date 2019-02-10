@@ -2,8 +2,12 @@ const express = require('express')
 const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const bodyParser = require('body-parser');
+
 // http client
 const request = require('request');
+// UUID generator
+const uuidv4 = require('uuid/v4');
+
 const app = express()
 // Connection URL
 const url = 'mongodb://users:J1ovddMPAbI' + encodeURIComponent('=') + '@ds163054.mlab.com:63054/db-server-side-food';
@@ -117,11 +121,214 @@ app.get('/api/foods/:itemId', function (req, res) {
 });
 
 /**
+ * Stores search engine with <country_code> filter (ISO)
+ *
+ * @author: Nikita ROUSSEAU
+ *
+ * Request: [GET] http://localhost:3000/api/stores/search?region=us
+ * Response:
+ * {
+ *
+ * }
+ */
+app.get('/api/stores/search', function (req, res) {
+  let country_code;
+
+  if (req.query.region == null || String(req.query.region).length !== 2) {
+    res.status(400).send("Invalid country_code, must be coded on two letters.");
+    return;
+  }
+
+  country_code = String(req.query.region);
+
+  // TODO: implement search stores by region
+});
+
+/**
+ * Given an :itemId, fetch a collection of <Pricing> objects
+ *
+ * @author: Nikita ROUSSEAU
+ *
+ * Request: [GET] http://localhost:3000/api/foods/0000000027205/pricing
+ * Response:
+ * {
+ *    "item": {
+ *      "_id": "0000000027205",
+ *      "pricing": [(...)]
+ *    }
+ * }
+ */
+app.get('/api/foods/:itemId/pricing', function (req, res) {
+  let itemId;
+
+  if (req.params.itemId == null) {
+    res.status(400).send("Invalid :itemId, :itemId must be an Integer.");
+    return;
+  }
+
+  itemId = req.params.itemId;
+
+  collection.find({ _id: itemId }).toArray(function (err, result_collection) {
+    assert.equal(err, null);
+
+    if (result_collection[0] === undefined) {
+      res.status(404).send();
+      return;
+    }
+
+    let item = result_collection[0];
+
+    // Not found
+    if (result_collection[0] === undefined) {
+      res.status(404).send();
+      return;
+    }
+    // No pricing yet
+    if (item.pricing === undefined) {
+      res.send(
+          {
+            "item": {
+              "_id": itemId,
+              "pricing": []
+            }
+          }
+      );
+      return;
+    }
+    // 200 OK
+    res.send(
+        {
+          "item": {
+            "_id": itemId,
+            "pricing": item.pricing
+          }
+        }
+    );
+  });
+});
+
+/**
+ * Add a new Pricing information attached to :itemId
+ * A Pricing object has a "price", "date" and "store" attribute
+ * An item has a collection Pricing
+ *
+ * @author: Nikita ROUSSEAU
+ *
+ * Request: [POST] http://localhost:3000/api/foods/0000000027205/pricing
+ * Body as Application/JSON:
+ * {
+ *  "price": 11,
+ *  "store": {
+ *    "storeId": 42,
+ *    "name": "TotoShop42",
+ *    "location": {
+ *      "type": "Point",
+ *      "coordinates": [-73.856077, 40.848447]
+ *    },
+ *    "country_code": "us"
+ *  }
+ * }
+ *
+ * Response:
+ * {
+ *    "item": {
+ *      "_id": "0000000027205",
+ *      "pricing": [(...)]
+ *    }
+ * }
+ */
+app.post('/api/foods/:itemId/pricing', function (req, res) {
+  let itemId = - 1;
+  let price = -1;
+  let store = {
+    "storeId": -1,
+    "name": "",
+    "location": {
+      "type": "Point",
+      "coordinates": [-73.856077, 40.848447]
+    },
+    "country_code": "us"
+  };
+  let pricing_collection = [];
+
+  // itemId
+  if (req.params.itemId == null) {
+    res.status(400).send("Missing item identifier.");
+    return;
+  }
+  itemId = req.params.itemId;
+  // price
+  if (req.body.price == null) {
+    res.status(400).send("Missing price.");
+    return;
+  }
+  price = req.body.price;
+  // store
+  if (req.body["store"] == null) {
+    res.status(400).send("Missing store object.");
+    return;
+  }
+  store = req.body["store"];
+
+  collection.find({ _id: itemId }).toArray(function (err, result_collection) {
+    assert.equal(err, null);
+
+    // Not found
+    if (result_collection[0] === undefined) {
+      res.status(404).send();
+      return;
+    }
+
+    // Resolve pricing collection
+    if (result_collection[0].pricing !== undefined && Array.isArray(result_collection[0].pricing)) {
+      pricing_collection = result_collection[0].pricing;
+    }
+
+    // Update collection
+    pricing_collection.push({
+      "_uuid": uuidv4(),
+      "price": price,
+      "currency": "euro",
+      "date": Date.now(),
+      "store": store
+    });
+    collection.updateOne(
+        { _id: itemId },
+        {
+          $set: { 'pricing': pricing_collection }
+        }
+    );
+
+    // 201 Created
+    res.status(201).send(
+        {
+          "item": {
+            "_id": itemId,
+            "pricing": pricing_collection
+          }
+        }
+    );
+  });
+});
+
+/**
  * Region reverse geocoding by long/lat
  * Valid longitude values are between -180 and 180, both inclusive.
  * Valid latitude values are between -90 and 90 (both inclusive).
  *
- * Example: http://localhost:3000/api/regions/resolve?lon=-73.856077&lat=40.848447
+ * @author: Nikita ROUSSEAU
+ *
+ * Request: [GET] http://localhost:3000/api/regions/resolve?lon=-73.856077&lat=40.848447
+ * Response:
+ * {
+ *   "island": "Hunter Island",
+ *   "county": "Bronx County",
+ *   "city": "NYC",
+ *   "state": "New York",
+ *   "postcode": "10805",
+ *   "country": "USA",
+ *   "country_code": "us"
+ * }
  */
 app.get('/api/regions/resolve', function (req, res) {
 
