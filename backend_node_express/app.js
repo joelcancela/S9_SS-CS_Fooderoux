@@ -147,7 +147,7 @@ app.get('/api/foods/:itemId', function (req, res) {
 });
 
 /**
- * Stores search engine with <country_code> filter (ISO)
+ * Given a <country_code> (ISO), fetch all known stores
  *
  * @author: Nikita ROUSSEAU
  *
@@ -159,6 +159,8 @@ app.get('/api/foods/:itemId', function (req, res) {
  */
 app.get('/api/stores/search', function (req, res) {
   let country_code;
+  let known_stores = [];
+  let stores = [];
 
   if (req.query.region == null || String(req.query.region).length !== 2) {
     res.status(400).send("Invalid country_code, must be coded on two letters.");
@@ -167,7 +169,43 @@ app.get('/api/stores/search', function (req, res) {
 
   country_code = String(req.query.region);
 
-  // TODO: implement search stores by region
+  // All items with at leat one store in the selected country
+  collection.find({'pricing.store.country_code': country_code}).toArray(function (err, result_collection) {
+    assert.equal(err, null);
+
+    if (result_collection[0] === undefined) {
+      res.status(404).send();
+      return;
+    }
+
+    // Pack stores
+    result_collection.forEach(function (item) {
+      item.pricing.forEach(function(price) {
+        let store = price["store"];
+        // Filter regions here
+        if (store.country_code !== country_code) {
+          return; // Continue
+        }
+
+        let store_hash =
+            String(store.storeId) +
+            String(store.name) +
+            String(store.location.coordinates[0]) +
+            String(store.location.coordinates[1]);
+        if (!known_stores.includes(store_hash)) {
+          stores.push(store);
+          known_stores.push(store_hash)
+        }
+      });
+    });
+
+    // 200 OK
+    res.send(
+        {
+          "stores": stores
+        }
+    );
+  });
 });
 
 /**
