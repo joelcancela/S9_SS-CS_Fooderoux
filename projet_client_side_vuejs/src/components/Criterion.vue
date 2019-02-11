@@ -1,6 +1,6 @@
 <template>
     <v-layout row align-center justify-content>
-        <v-radio class="radio" :label="name" :value="name"/>
+        <v-radio class="radio" :label="name" :value="name" color="#00cc00"/>
         <v-flex xs2 class="icons">
             <v-img width="30px" :src="imgPath"></v-img>
         </v-flex>

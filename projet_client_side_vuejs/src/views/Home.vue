@@ -78,22 +78,19 @@ export default {
 </script>
 
 <style scoped>
-.searchBar {
-  padding-right: 10%;
-  padding-left: 10%;
-  background-color: lightslategrey;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
+    .searchBar {
+        background-color: #404040;
+        padding: 5px 10%;
+    }
 
-.home {
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  height: 100%;
-  max-height: 100vh;
-  overflow: hidden;
-  padding-bottom: 1px;
-}
+    .home {
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        height: 100%;
+        max-height: 100vh;
+        overflow: hidden;
+        padding-bottom: 1px;
+    }
 </style>
