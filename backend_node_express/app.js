@@ -79,7 +79,7 @@ app.get('/api/foods', function (req, res, next) {
     criterias.push({ $or: [{ serving_size: reg }, { quantity: reg }] });
   } if (req.query.store != null) {
     let reg = new RegExp(".*" + req.query.store + ".*", "i");
-    criterias.push({ stores: reg });
+    criterias.push({ 'pricing.store.name': reg });
   }
   let reg = new RegExp("[^\s]*", "i");
   let regArray = { $exists: true, $ne: [] };
@@ -171,7 +171,7 @@ app.get('/api/stores/search', function (req, res) {
   country_code = String(req.query.region);
 
   // All items with at leat one store in the selected country
-  collection.find({'pricing.store.country_code': country_code}).toArray(function (err, result_collection) {
+  collection.find({ 'pricing.store.country_code': country_code }).toArray(function (err, result_collection) {
     assert.equal(err, null);
 
     if (result_collection[0] === undefined) {
@@ -181,7 +181,7 @@ app.get('/api/stores/search', function (req, res) {
 
     // Pack stores
     result_collection.forEach(function (item) {
-      item.pricing.forEach(function(price) {
+      item.pricing.forEach(function (price) {
         let store = price["store"];
         // Filter regions here
         if (store.country_code !== country_code) {
@@ -189,10 +189,10 @@ app.get('/api/stores/search', function (req, res) {
         }
 
         let store_hash =
-            String(store.storeId) +
-            String(store.name) +
-            String(store.location.coordinates[0]) +
-            String(store.location.coordinates[1]);
+          String(store.storeId) +
+          String(store.name) +
+          String(store.location.coordinates[0]) +
+          String(store.location.coordinates[1]);
         if (!known_stores.includes(store_hash)) {
           stores.push(store);
           known_stores.push(store_hash)
@@ -202,9 +202,9 @@ app.get('/api/stores/search', function (req, res) {
 
     // 200 OK
     res.send(
-        {
-          "stores": stores
-        }
+      {
+        "stores": stores
+      }
     );
   });
 });
@@ -246,23 +246,23 @@ app.get('/api/foods/:itemId/pricing', function (req, res) {
     // No pricing yet
     if (item.pricing === undefined) {
       res.send(
-          {
-            "item": {
-              "_id": itemId,
-              "pricing": []
-            }
+        {
+          "item": {
+            "_id": itemId,
+            "pricing": []
           }
+        }
       );
       return;
     }
     // 200 OK
     res.send(
-        {
-          "item": {
-            "_id": itemId,
-            "pricing": item.pricing
-          }
+      {
+        "item": {
+          "_id": itemId,
+          "pricing": item.pricing
         }
+      }
     );
   });
 });
@@ -307,12 +307,12 @@ app.get('/api/foods/:itemId/price', function (req, res) {
     // No pricing yet
     if (item.pricing === undefined) {
       res.send(
-          {
-            "item": {
-              "_id": itemId,
-              "price": price
-            }
+        {
+          "item": {
+            "_id": itemId,
+            "price": price
           }
+        }
       );
       return;
     }
@@ -324,12 +324,12 @@ app.get('/api/foods/:itemId/price', function (req, res) {
 
     // 200 OK
     res.send(
-        {
-          "item": {
-            "_id": itemId,
-            "price": price
-          }
+      {
+        "item": {
+          "_id": itemId,
+          "price": price
         }
+      }
     );
   });
 });
