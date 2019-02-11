@@ -591,15 +591,15 @@ app.get('/api/foods/:itemId/imageLink', function (req, res) {
           }
           res.send({ link: url });
         } else {
-          res.status(404).send('Could not find image link');
+          res.status(404).send({ link: null, error: 'Could not find image link' });
         }
 
       } else {
-        res.status(404).send('Item id is incorrect');
+        res.status(404).send({ link: null, error: 'Item id is incorrect' });
       }
     });
   } else {
-    res.status(400).send([]);
+    res.status(400).send({ link: null, error: 'bad request' });
   }
 })
 
