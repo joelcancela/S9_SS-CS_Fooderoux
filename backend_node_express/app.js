@@ -148,20 +148,6 @@ app.get('/api/foods/:itemId', function (req, res) {
 });
 
 /**
- * Given an :itemId, filter depending on the criteria
- *
- * @author: Nikita ROUSSEAU
- *
- * Request: [GET] http://localhost:3000/api/foods/0000000027205/search
- * Response:
- * {
- * }
- */
-app.get('/api/foods/:itemId/search', function (req, res) {
-  // TODO : implement "searching for items by price can be limited to a given store"
-});
-
-/**
  * Given a <country_code> (ISO), fetch all known stores
  *
  * @author: Nikita ROUSSEAU
