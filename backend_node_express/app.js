@@ -573,7 +573,7 @@ app.get('/api/foods/:itemId/imageLink', function (req, res) {
       if (docs[0] != undefined) {
         let item = docs[0];
         let url = "https://static.openfoodfacts.org/images/products/";
-        if (item.images.front_fr != undefined) {
+        if (item.images != undefined && item.images.front_fr != undefined) {
           if (item._id.length == 9) {
             let str = item._id;
             url += str.substring(0, 3) + "/" + str.substring(3, 6) + "/" + str.substring(6) + "/front_fr.";
