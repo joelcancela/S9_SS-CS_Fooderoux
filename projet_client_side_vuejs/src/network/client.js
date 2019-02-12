@@ -9,6 +9,14 @@ export function getFoods(params) {
     return get(url);
 }
 
+export async function getStoresFromRegion(iso) {
+    return await get(URL + "/api/stores/search?region=" + iso);
+}
+
+export async function getIsoFromPosition(lat, lng) {
+    return get(URL + "/api/regions/resolve?lon=" + lng + "&lat=" + lat);
+}
+
 export function getFoodFromItemID(itemID) {
     return get(URL + "/api/foods/" + itemID);
 }

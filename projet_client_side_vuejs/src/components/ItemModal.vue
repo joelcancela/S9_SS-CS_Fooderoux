@@ -178,4 +178,7 @@ export default {
     align-items: center;
     justify-content: center;
 }
+v-label {
+    color: rebeccapurple;
+}
 </style>

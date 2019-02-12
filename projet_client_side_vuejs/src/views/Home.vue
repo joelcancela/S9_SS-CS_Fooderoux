@@ -28,7 +28,7 @@
                             <component v-bind:is="mainComponent"/>
                         </v-flex>
                         <v-flex xs2>
-                            <Criterions/>
+                            <component v-bind:is="filtersComponent"/>
                         </v-flex>
                     </v-layout>
                 </v-flex>
@@ -41,20 +41,25 @@
 import Drawer from "../components/Drawer";
 import ItemsGrid from "../components/ItemsGrid";
 import Criterions from "../components/Criterions";
-import MapView from "../components/MapView"
+import MapView from "../components/MapView";
+import RecipeView from "../components/RecipeView";
+import RecipeFilters from "../components/RecipeFilters";
 
 export default {
   components: {
     Drawer,
     ItemsGrid,
     Criterions,
-    MapView
+    MapView,
+    RecipeView,
+    RecipeFilters
   },
   data: function() {
     return {
       coloredIcon: require("../assets/diet_Colored.png"),
       placeholder: "Chercher un aliment",
-      mainComponent: "ItemsGrid"
+      mainComponent: "ItemsGrid",
+      filtersComponent: "Criterions"
     };
   },
   methods: {
@@ -62,16 +67,19 @@ export default {
       this.coloredIcon = require("../assets/diet_Colored.png");
       this.placeholder = "Chercher un aliment";
       this.mainComponent = "ItemsGrid";
+      this.filtersComponent = "Criterions";
     },
     changeToRecipe() {
       this.coloredIcon = require("../assets/recipe-book_Colored.png");
       this.placeholder = "Chercher une recette";
-      this.mainComponent = "ItemsGrid";
+      this.mainComponent = "RecipeView";
+      this.filtersComponent = "Criterions";
     },
     changeToMap() {
       this.coloredIcon = require("../assets/store_Colored.png");
       this.placeholder = "Chercher un magasin";
       this.mainComponent = "MapView";
+      this.filtersComponent = "RecipeFilters";
     }
   }
 };
