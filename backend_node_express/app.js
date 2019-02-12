@@ -577,7 +577,7 @@ app.get('/api/foods/:itemId/imageLink', function (req, res) {
           if (item._id.length == 9) {
             let str = item._id;
             url += str.substring(0, 3) + "/" + str.substring(3, 6) + "/" + str.substring(6) + "/front_fr.";
-          } else if (item._id.length == 13) {
+          } else if (item._id.length == 13 || item._id.length >= 10) {
             let str = item._id;
             url += str.substring(0, 3) + "/" + str.substring(3, 6) + "/" + str.substring(6, 9) + "/" + str.substring(9) + "/front_fr.";
           } else {
