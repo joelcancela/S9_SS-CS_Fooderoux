@@ -29,6 +29,10 @@ export function getImageFromItemID(itemID) {
     return get(URL + "/api/foods/" + itemID + "/imageLink");
 }
 
+export function getPriceFromItemID(itemID) {
+    return get(URL + "/api/foods/" + itemID + "/price");
+}
+
 function get(url) {
     return fetch(url, {
             method: 'get',

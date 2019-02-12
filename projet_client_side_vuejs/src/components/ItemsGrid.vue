@@ -13,7 +13,7 @@
                                         <v-label>{{item.product_name}}</v-label>
                                     </v-flex>
                                     <v-flex xs3 v-on:click.stop>
-                                        <v-checkbox @change="itemSelect" v-model="checkboxes[n]" color="#00cc00"/>
+                                        <v-checkbox @change="itemSelect" v-model="item.selected" color="#00cc00"/>
                                     </v-flex>
                                 </v-layout>
                             </v-card>
@@ -24,7 +24,7 @@
                 </v-flex>
 
                 <v-flex xs2 class="comparisonButton">
-                    <ComparisonModal :buttonDisabled="selectedItems < 2" :items="items" :itemsSelected="selectedItems"/>
+                    <ComparisonModal :buttonDisabled="selectedItems < 2" :items="getSelectedItems()" :itemsSelected="selectedItems"/>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -60,7 +60,10 @@
                     .then((response) => {
                         for (let i in response) {
                             response[i].image = "https://paulinediet.fr/wp-content/uploads/2018/02/fruits.png";
+                            response[i].selected = false;
                             this.getItemImage(response[i].id, i);
+                            this.getAverageItemPrice(response[i].id, i);
+                            this.getOurItemScore(response[i].id, i);
                         }
                         this.items = response;
                     })
@@ -76,6 +79,33 @@
                         this.items[index].image = response.link;
                     })
                     .catch(() => {});
+            },
+            getAverageItemPrice(itemId, index) {
+                Client.getPriceFromItemID(itemId)
+                    .then((response) => {
+                        if (response.ok) return response.json();
+                        else throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then((response) => {
+                        this.items[index].price = response.item.price + "€";
+                    })
+                    .catch(() => {
+                        this.items[index].price = "Inconnu"
+                    });
+            },
+            getOurItemScore(itemId, index) {
+                Client.getScoreFromItemID(itemId)
+                    .then((response) => {
+                        if (response.ok) return response.json();
+                        else throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then((response) => {
+                        this.items[index].our_score = response.score;
+                    })
+                    .catch(() => {});
+            },
+            getSelectedItems() {
+                return this.items === undefined ? [] : this.items.filter(item => item.selected);
             },
             initCheckboxes() {
                 let array = [];
