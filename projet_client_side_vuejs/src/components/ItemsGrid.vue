@@ -4,13 +4,13 @@
             <v-layout column align-center style="height: 100%">
                 <v-flex xs10 class="list">
                     <v-layout row wrap>
-                        <v-flex v-for="n in 19" :key="n" shrink pa-1>
+                        <v-flex v-for="(item, n) of items" :key="n" shrink pa-1>
                             <v-card @click="dialogClicked()" class="card">
-                                <v-img class="image" src="https://images-na.ssl-images-amazon.com/images/I/910uahYmmPL._SY355AA355_PIbundle-40,TopRight,0,0_AA355_SH20_.jpg"></v-img>
+                                <v-img height="120px" class="image" :src="item.image"></v-img>
 
                                 <v-layout row align-center justify-center>
                                     <v-flex xs9 class="itemName">
-                                        <v-label>Chips lays</v-label>
+                                        <v-label>{{item.product_name}}</v-label>
                                     </v-flex>
                                     <v-flex xs3 v-on:click.stop>
                                         <v-checkbox @change="itemSelect" v-model="checkboxes[n]" color="#00cc00"/>
@@ -24,7 +24,7 @@
                 </v-flex>
 
                 <v-flex xs2 class="comparisonButton">
-                    <ComparisonModal :buttonDisabled="selectedItems < 2" :items="results" :itemsSelected="selectedItems"/>
+                    <ComparisonModal :buttonDisabled="selectedItems < 2" :items="items" :itemsSelected="selectedItems"/>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -34,6 +34,7 @@
 <script>
     import ComparisonModal from "./ComparisonModal";
     import ItemModal from "./ItemModal";
+    import * as Client from "../network/client"
 
     export default {
         name: "ItemsGrid",
@@ -43,20 +44,39 @@
         },
         data: function() {
             return {
-                results: [
-                    {
-                        path: "https://images-na.ssl-images-amazon.com/images/I/910uahYmmPL._SY355AA355_PIbundle-40,TopRight,0,0_AA355_SH20_.jpg",
-                        price: 2,
-                        name: "chips lays",
-                        score: "A"
-                    }
-                ],
+                items: this.getAliments(),
                 checkboxes: this.initCheckboxes(),
                 selectedItems: 0,
                 dialog: false
             };
         },
         methods: {
+            getAliments() {
+                Client.getFoods({name: ""})
+                    .then((response) => {
+                        if (response.ok) return response.json();
+                        else throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then((response) => {
+                        for (let i in response) {
+                            response[i].image = "https://paulinediet.fr/wp-content/uploads/2018/02/fruits.png";
+                            this.getItemImage(response[i].id, i);
+                        }
+                        this.items = response;
+                    })
+                    .catch((error) => console.log(error));
+            },
+            getItemImage(itemId, index) {
+                Client.getImageFromItemID(itemId)
+                    .then((response) => {
+                        if (response.ok) return response.json();
+                        else throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then((response) => {
+                        this.items[index].image = response.link;
+                    })
+                    .catch(() => {});
+            },
             initCheckboxes() {
                 let array = [];
                 for (let i = 0; i < 9; i++) {
@@ -84,7 +104,8 @@
         overflow-y: auto;
     }
     .card {
-        width: 148px;
+        width: 150px;
+        height: 220px;
         padding-top: 5px;
         padding-left: 5px;
         padding-right: 5px;

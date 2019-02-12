@@ -1,4 +1,4 @@
-const URL = "http://localhost:3000";
+const URL = "https://server-side-food-backend.herokuapp.com";
 
 export function getFoods(params) {
     let url = URL + "/api/foods?";
@@ -6,41 +6,26 @@ export function getFoods(params) {
         url += addToURL(key, params[key]);
     }
 
-    return get(
-        url,
-        (res) => {console.log(res)}
-        );
+    return get(url);
 }
 
 export function getFoodFromItemID(itemID) {
-    return get(
-        URL + "/api/foods/" + itemID,
-        (res) => {console.log(res)}
-    );
+    return get(URL + "/api/foods/" + itemID);
 }
 
 export function getScoreFromItemID(itemID) {
-    return get(
-        URL + "/api/foods/" + itemID + "/score",
-        (res) => {console.log(res)}
-    );
+    return get(URL + "/api/foods/" + itemID + "/score");
 }
 
 export function getImageFromItemID(itemID) {
-    return get(
-        URL + "/api/foods/" + itemID + "/imageLink",
-        (res) => {console.log(res)}
-    );
+    return get(URL + "/api/foods/" + itemID + "/imageLink");
 }
 
-function get(url, callback) {
+function get(url) {
     return fetch(url, {
             method: 'get',
             headers: { "Content-Type": "application/json; charset=utf-8" },
-        })
-        .then(response => response.json())
-        .then(resJson => callback(resJson))
-        .catch(err => console.error(err));
+        });
 }
 
 function post(url, body) {
@@ -48,8 +33,7 @@ function post(url, body) {
             method: 'post',
             headers: { "Content-Type": "application/json; charset=utf-8" },
             body: body
-        })
-        .catch(err => console.error(err));
+        });
 }
 
 function addToURL(paramName, param) {
