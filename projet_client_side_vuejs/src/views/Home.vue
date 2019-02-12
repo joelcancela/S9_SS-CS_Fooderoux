@@ -8,13 +8,8 @@
                             <v-img contain width="50%" :src="coloredIcon"></v-img>
                         </v-flex>
                         <v-flex xs10>
-                            <v-text-field
-                                    label="Solo"
-                                    :placeholder="placeholder"
-                                    append-icon="search"
-                                    solo
-                                    hide-details
-                            ></v-text-field>
+                            <v-text-field label="Solo" :placeholder="placeholder" append-icon="search"
+                                          solo hide-details v-model="search"></v-text-field>
                         </v-flex>
                     </v-layout>
                 </v-flex>
@@ -25,10 +20,10 @@
                             <Drawer v-on:map="changeToMap()" v-on:diet="changeToDiet()" v-on:recipe="changeToRecipe()"/>
                         </v-flex>
                         <v-flex xs8>
-                            <component v-bind:is="mainComponent"/>
+                            <component :search="search" :filters="filters" v-bind:is="mainComponent"/>
                         </v-flex>
                         <v-flex xs2>
-                            <component v-bind:is="filtersComponent"/>
+                            <component v-on:update_filters="updateFilters" v-bind:is="filtersComponent"/>
                         </v-flex>
                     </v-layout>
                 </v-flex>
@@ -46,42 +41,43 @@ import RecipeView from "../components/RecipeView";
 import RecipeFilters from "../components/RecipeFilters";
 
 export default {
-  components: {
-    Drawer,
-    ItemsGrid,
-    Criterions,
-    MapView,
-    RecipeView,
-    RecipeFilters
-  },
-  data: function() {
-    return {
-      coloredIcon: require("../assets/diet_Colored.png"),
-      placeholder: "Chercher un aliment",
-      mainComponent: "ItemsGrid",
-      filtersComponent: "Criterions"
-    };
-  },
-  methods: {
-    changeToDiet() {
-      this.coloredIcon = require("../assets/diet_Colored.png");
-      this.placeholder = "Chercher un aliment";
-      this.mainComponent = "ItemsGrid";
-      this.filtersComponent = "Criterions";
+    components: {
+        Drawer, ItemsGrid, Criterions, MapView, RecipeView, RecipeFilters
     },
-    changeToRecipe() {
-      this.coloredIcon = require("../assets/recipe-book_Colored.png");
-      this.placeholder = "Chercher une recette";
-      this.mainComponent = "RecipeView";
-      this.filtersComponent = "Criterions";
+    data: function() {
+        return {
+            coloredIcon: require("../assets/diet_Colored.png"),
+            placeholder: "Chercher un aliment",
+            mainComponent: "ItemsGrid",
+            filtersComponent: "Criterions",
+            search: "",
+            filters: {}
+        };
     },
-    changeToMap() {
-      this.coloredIcon = require("../assets/store_Colored.png");
-      this.placeholder = "Chercher un magasin";
-      this.mainComponent = "MapView";
-      this.filtersComponent = "RecipeFilters";
+    methods: {
+        changeToDiet() {
+            this.coloredIcon = require("../assets/diet_Colored.png");
+            this.placeholder = "Chercher un aliment";
+            this.mainComponent = "ItemsGrid";
+            this.filtersComponent = "Criterions";
+        },
+        changeToRecipe() {
+            this.coloredIcon = require("../assets/recipe-book_Colored.png");
+            this.placeholder = "Chercher une recette";
+            this.mainComponent = "RecipeView";
+            this.filtersComponent = "Criterions";
+        },
+        changeToMap() {
+            this.coloredIcon = require("../assets/store_Colored.png");
+            this.placeholder = "Chercher un magasin";
+            this.mainComponent = "MapView";
+            this.filtersComponent = "RecipeFilters";
+        },
+        updateFilters(filters) {
+            this.filters = filters;
+            console.log("FILTERS", filters);
+        }
     }
-  }
 };
 </script>
 

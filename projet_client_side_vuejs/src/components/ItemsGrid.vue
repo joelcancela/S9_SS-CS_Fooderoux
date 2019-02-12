@@ -35,6 +35,7 @@
     import ComparisonModal from "./ComparisonModal";
     import ItemModal from "./ItemModal";
     import * as Client from "../network/client"
+    import _ from 'lodash';
 
     export default {
         name: "ItemsGrid",
@@ -42,17 +43,21 @@
             ComparisonModal,
             ItemModal
         },
+        props: {
+            search: String,
+            filters: Object
+        },
         data: function() {
             return {
                 items: this.getAliments(),
                 checkboxes: this.initCheckboxes(),
                 selectedItems: 0,
-                dialog: false
+                dialog: false,
             };
         },
         methods: {
             getAliments() {
-                Client.getFoods({name: ""})
+                Client.getFoods(this.generateParams())
                     .then((response) => {
                         if (response.ok) return response.json();
                         else throw new Error("HTTP response status not code 200 as expected.");
@@ -119,7 +124,34 @@
             },
             dialogClicked(item) {
                 this.$refs.ItemModal.dialogClicked(item);
+            },
+            generateParams() {
+                let params = {name: this.search, limit: 20};
+                if (this.filters.hasOwnProperty("quantity") && this.filters.quantity !== "") {
+                    params.quantity = this.filters.quantity;
+                }
+                if (this.filters.hasOwnProperty("store") && this.filters.store !== "" && !this.filters.store.includes("-")) {
+                    params.store = this.filters.store;
+                }
+                if (this.filters.hasOwnProperty("nutriscore") && this.filters.nutriscore !== "" && !this.filters.nutriscore.includes("-")) {
+                    params["nutrition_score"] = this.filters.nutriscore;
+                }
+                if (this.filters.hasOwnProperty("sortBy") && this.filters.sortBy !== "") {
+                    params.sortBy = this.filters.sortBy;
+                }
+                return params;
             }
+        },
+        watch: {
+            search: function () {
+                this.debouncedGetAnswer()
+            },
+            filters: function () {
+                this.debouncedGetAnswer()
+            }
+        },
+        created: function () {
+            this.debouncedGetAnswer = _.debounce(this.getAliments, 500);
         }
     };
 </script>
