@@ -79,8 +79,8 @@
             },
             getOurScoreImage(item) {
                 if (item.hasOwnProperty("our_score")) {
-                    let nutritionScore = item.our_score.toLowerCase();
-                    return require('../assets/n' + nutritionScore + '.png');
+                    let score = item.our_score.toLowerCase();
+                    return require('../assets/n' + score + '.png');
                 } else {
                     return require('../assets/unknown.png');
                 }

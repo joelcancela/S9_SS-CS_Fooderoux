@@ -17,10 +17,6 @@ export async function getIsoFromPosition(lat, lng) {
     return get(URL + "/api/regions/resolve?lon=" + lng + "&lat=" + lat);
 }
 
-export function getFoodFromItemID(itemID) {
-    return get(URL + "/api/foods/" + itemID);
-}
-
 export function getScoreFromItemID(itemID) {
     return get(URL + "/api/foods/" + itemID + "/score");
 }

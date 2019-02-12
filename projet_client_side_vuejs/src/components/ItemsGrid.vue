@@ -5,7 +5,7 @@
                 <v-flex xs10 class="list">
                     <v-layout row wrap>
                         <v-flex v-for="(item, n) of items" :key="n" shrink pa-1>
-                            <v-card @click="dialogClicked()" class="card">
+                            <v-card @click="dialogClicked(item)" class="card">
                                 <v-img height="120px" class="image" :src="item.image"></v-img>
 
                                 <v-layout row align-center justify-center>
@@ -117,8 +117,8 @@
             itemSelect(newValue) {
                 newValue ? this.selectedItems++ : this.selectedItems--;
             },
-            dialogClicked() {
-                this.$refs.ItemModal.dialogClicked();
+            dialogClicked(item) {
+                this.$refs.ItemModal.dialogClicked(item);
             }
         }
     };

@@ -9,20 +9,20 @@
                     <v-flex xs4 class="productInfos row">
                         <v-flex xs3/>
                         <v-flex xs3 class="headerFlex">
-                            <v-label>{{item.name}}</v-label>
+                            <v-label>{{item.product_name_fr}}</v-label>
                         </v-flex>
                         <v-flex xs3 class="headerFlex">
-                            <v-img max-width="110px" :src="item.path"></v-img>
+                            <v-img max-width="110px" :src="item.image"></v-img>
                         </v-flex>
                         <v-flex xs3 class="headerFlex">
                             <v-flex class="score">
-                                <v-img width="70px" :src="require('../assets/n'+item.nutrition_grade_fr.toLowerCase()+'.png')"></v-img>
+                                <v-img width="70px" :src="getNutritionImage()"></v-img>
                                 <v-flex class="labels">
                                     <v-label text-center>Nutriscore</v-label>
                                 </v-flex>
                             </v-flex>
                             <v-flex class="score">
-                                <v-img width="70px" :src="require('../assets/n'+item.nutrition_grade_fr.toLowerCase()+'.png')"></v-img>
+                                <v-img width="70px" :src="getOurScoreImage()"></v-img>
                                 <v-flex class="labels">
                                     <v-label text-center>Score</v-label>
                                 </v-flex>
@@ -32,7 +32,7 @@
                     </v-flex>
 
                     <v-flex xs3 class="prices row">
-                        <v-card class="shopIcons" v-for="(price, index) in item.prices" :key="index">
+                        <v-card class="shopIcons" v-for="(price, index) in prices" :key="index">
                             <v-flex xs8>
                                 <v-img width="60px" style="margin: 5px" :src="require('../assets/'+price.shop+'.png')"/>
                             </v-flex>
@@ -51,14 +51,17 @@
                             </v-layout>
                             <v-layout class="row">
                                 <v-select class="priceInput" :items="stores" label="Magasin" solo></v-select>
+                                <v-select class="priceInput" :items="towns" label="Ville" solo></v-select>
                                 <v-text-field class="priceInput" label="Prix en €" color="#00cc00"></v-text-field>
                                 <v-btn class="priceButton white--text" color="#00cc00">Ajouter</v-btn>
                             </v-layout>
                         </v-layout>
                     </v-flex>
 
-                    <v-flex xs2 class="ingredients row">
-                        <v-chip text-color="white" color="#00cc00" disabled v-for="(ingredient, index) in item.ingredients" :key="index">{{ingredient.text}}</v-chip>
+                    <v-flex xs2 class="ingredients row text-xs-center">
+                        <v-chip text-color="white" color="#00cc00" disabled v-for="(ingredient, index) in getIngredients()" :key="index">
+                            {{ingredient}}
+                        </v-chip>
                     </v-flex>
                 </v-layout>
             </v-card-text>
@@ -72,36 +75,55 @@ export default {
     data: function() {
         return {
             dialog: false,
-            item: {
-                path:
-                    "https://images-na.ssl-images-amazon.com/images/I/910uahYmmPL._SY355AA355_PIbundle-40,TopRight,0,0_AA355_SH20_.jpg",
-                prices: [
-                    { shop: "carrefour", price: 5 },
-                    { shop: "leclerc", price: 10 },
-                    { shop: "leclerc", price: 10 },
-                    { shop: "leclerc", price: 10 },
-                    { shop: "leclerc", price: 10 },
-                    { shop: "leclerc", price: 10 },
-                    { shop: "leclerc", price: 10 }
-                ],
-                ingredients: [
-                    { text: "Lait" },
-                    { text: "Beurre" },
-                    { text: "Oeuf" },
-                    { text: "Sucre" }
-                ],
-                name: "chips lays",
-                nutrition_grade_fr: "a"
-            },
+            item: {},
             stores: ["Leclerc", "Carrefour", "Auchan", "Lidl", "Monoprix"],
+            towns: ["Antibes", "Nice", "Biot", "Montauroux"],
+            prices: [
+                { shop: "carrefour", price: 5 },
+                { shop: "leclerc", price: 10 },
+                { shop: "leclerc", price: 10 },
+                { shop: "leclerc", price: 10 },
+                { shop: "leclerc", price: 10 },
+                { shop: "leclerc", price: 10 },
+                { shop: "leclerc", price: 10 }
+            ],
         };
     },
     methods: {
         closeDialog() {
             this.dialog = false;
         },
-        dialogClicked() {
+        dialogClicked(item) {
+            this.item = item;
             this.dialog = true;
+        },
+        getNutritionImage() {
+            if (this.item.hasOwnProperty("nutrition_grade_fr")) {
+                let nutritionScore = this.item.nutrition_grade_fr.toLowerCase();
+                return require('../assets/n' + nutritionScore + '.png');
+            } else {
+                return require('../assets/unknown.png');
+            }
+        },
+        getOurScoreImage() {
+            if (this.item.hasOwnProperty("our_score")) {
+                let score = this.item.our_score.toLowerCase();
+                return require('../assets/n' + score + '.png');
+            } else {
+                return require('../assets/unknown.png');
+            }
+        },
+        getIngredients() {
+            let ingr = [];
+            for (let i in this.item.ingredients) {
+                if (i === "0") continue;
+                ingr.push(this.capitalizeFirstLetter(this.item.ingredients[i].text));
+            }
+
+            return ingr;
+        },
+        capitalizeFirstLetter(str) {
+            return str.charAt(0).toUpperCase() + str.slice(1);
         }
     },
     props: {
@@ -158,7 +180,6 @@ export default {
     margin: 15px 0 10px 0;
 }
 .ingredients {
-    display: flex;
     justify-content: center;
     align-items: center;
 }
@@ -177,8 +198,5 @@ export default {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-v-label {
-    color: rebeccapurple;
 }
 </style>
