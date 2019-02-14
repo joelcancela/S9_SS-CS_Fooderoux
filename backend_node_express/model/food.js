@@ -8,6 +8,12 @@ class Food {
         this.nutrition_grade = food_nosql.nutrition_grade_fr || food_nosql.nutrition_grades || "";
         this.ingredients = food_nosql.ingredients || food_nosql.ingredients_tags || food_nosql.ingredients_text || food_nosql.ingredients_text_fr || "";
         this.additives = food_nosql.additives || [];
+        if (typeof this.additives === 'string') {
+            this.additives = this.additives.trim();
+            this.additives = this.additives.replace(/\[(\s+)[\da-zA-Z-]+(\s+)->(\s+)[A-z]+:/gm, "");
+            this.additives = this.additives.replace(/(\s+)\](\s*)/gm, ",").slice(0, -1);
+            this.additives = this.additives.split(",");
+        }
         this.nutriments = food_nosql.nutriments || {};
         this.allergens = food_nosql.allergens || food_nosql.allergens_tags || food_nosql.allergens_from_ingredients || food_nosql.traces || [];
         this.vitamins = food_nosql.vitamins_tags || [];
