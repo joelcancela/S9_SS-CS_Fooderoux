@@ -9,7 +9,7 @@
                     <v-flex xs4 class="productInfos row">
                         <v-flex xs3/>
                         <v-flex xs3 class="headerFlex">
-                            <v-label>{{item.product_name_fr}}</v-label>
+                            <label class="productName">{{item.product_name_fr}}</label>
                         </v-flex>
                         <v-flex xs3 class="headerFlex">
                             <v-img max-width="110px" :src="item.image"></v-img>
@@ -142,6 +142,11 @@ export default {
     justify-content: center;
     align-items: center;
     height: 100%;
+}
+.productName {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+    font-size: x-large;
+    color: dimgrey;
 }
 .productInfos {
     display: flex;

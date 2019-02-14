@@ -112,7 +112,7 @@
     }
     .text {
         color: white;
-        font-family: Nunito, Arial, Helvetica, sans-serif;
+        font-family: Roboto, Arial, Helvetica, sans-serif;
         font-size: large;
     }
     .values {
