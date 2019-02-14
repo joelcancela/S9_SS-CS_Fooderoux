@@ -111,6 +111,7 @@ app.post('/api/foods/:itemId/pricing', foods.postPriceForFood);
 app.get('/api/recipes/stats', recipes.getRecipeCount);
 app.get('/api/recipes', recipes.getAllRecipes);
 app.get('/api/recipes/:recipeId', recipes.getRecipeById);
+app.get('/api/recipes/:recipeId/price', recipes.getRecipePrice);
 app.post('/api/recipes/parse', recipes.parseRecipe);
 app.post('/api/recipes', recipes.postRecipe);
 app.post('/api/recipes/:recipeId/comment', recipes.postCommentOnRecipe);

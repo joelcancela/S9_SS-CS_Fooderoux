@@ -57,6 +57,53 @@ function getRecipeById(req, res) {
     });
 }
 
+function getRecipePrice(req, res) {
+    let id = req.params.recipeId;
+    let price = [];
+    let reducer = (accumulator, currentValue) => accumulator + currentValue;
+
+    recipeDb().find(ObjectId(id)).toArray(function (err, docs) {
+        if (err != null) {
+            res.status(400).send(err);
+        } else {
+            let item = docs[0];
+            if (item.ingredients != undefined && item.ingredients.length > 0) {
+                item.ingredients.forEach(function (element) {
+                    let reg = new RegExp(".*" + element + ".*", "i");
+                    let searchObject = { $or: [{ product_name: reg }, { product_name_en: reg }, { product_name_fr: reg }] };
+                    foodDb().find(searchObject).toArray(function (err, docs) {
+                        if (item.ingredients.indexOf(element) == item.ingredients.length - 1 && docs.length == 0) {
+                            res.send({ 'price': 0.0 });
+                            return;
+                        }
+                        if (err == null && docs.length > 0) {
+                            docs.forEach(function (element_i) {
+                                if (element_i.pricing != undefined && element_i.pricing.length > 0) {
+                                    element_i.pricing.forEach(function (pricing) {
+                                        price.push(pricing.price);
+                                    })
+                                }
+                                if (item.ingredients.indexOf(element) == item.ingredients.length - 1 && docs.indexOf(element_i) == docs.length - 1) {
+                                    if (price.length > 0) {
+                                        res.send({ 'price': price.reduce(reducer) / price.length });
+                                        return;
+                                    } else {
+                                        res.send({ 'price': 0.0 });
+                                        return;
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+            } else {
+                res.send({ 'price': 0.0 });
+                return;
+            }
+        }
+    });
+}
+
 function parseRecipe(req, res) {
     let result = {}; // JSON answer
     let data = req.body;
@@ -120,6 +167,7 @@ function postCommentOnRecipe(req, res) {
 exports.getRecipeCount = getRecipeCount;
 exports.getAllRecipes = getAllRecipes;
 exports.getRecipeById = getRecipeById;
+exports.getRecipePrice = getRecipePrice;
 exports.parseRecipe = parseRecipe;
 exports.postRecipe = postRecipe;
 exports.postCommentOnRecipe = postCommentOnRecipe;
