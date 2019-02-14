@@ -1,32 +1,24 @@
 <template>
-    <v-content class="mainContent">
+    <v-layout class="mainContent" column justify-space-between align-center>
         <v-expansion-panel class="panel">
-            <v-expansion-panel-content
-                    v-for="(recipe,index) in displayedRecipes"
-                    :key="index"
-            >
-                <div slot="header">{{recipe.name}}</div>
-                <v-flex class="ingredients">
-                    <v-chip @click="searchIngredient(ingredient)" class="ingredient"
-                            v-for="(ingredient,index) in recipe.ingredients" :key="index">{{ingredient}}
-                    </v-chip>
-                </v-flex>
-            </v-expansion-panel-content>
-            <v-expansion-panel-content>
+            <v-expansion-panel-content expand-icon="add">
                 <div class="addRecipeHeader" slot="header">Créer une recette</div>
                 <v-flex class="recipeCreationContent">
-                    <v-text-field class="ingredientsCombobox" placeHolder="Entrez le nom" color="#00cc00" v-model="recipeName" solo></v-text-field>
-                    <v-combobox
-                            class="ingredientsCombobox"
-                            v-model="newIngredients"
-                            chips
+                    <v-text-field hide-details class="textField ingredientsCombobox" placeHolder="Entrez le nom" color="#00cc00" v-model="recipeName" solo></v-text-field>
+                    <v-flex class="ingredientsRow ingredientsCombobox">
+                        <v-text-field
+                            hide-details
+                            class="textField"
+                            v-model="newIngredient"
                             placeholder="Entrez les ingrédients"
                             multiple
-                            deletable-chips
-                            solo
-                    >
-                        <div slot="append"></div>
-                    </v-combobox>
+                            solo>
+                        </v-text-field>
+                        <v-btn color="primary" :disabled="newIngredient === ''" @click="addIngredient">Ajouter l'ingrédient</v-btn>
+                    </v-flex>
+                    <v-flex>
+                        <v-chip color="green" outline @input="removeIngredient(index)" close v-for="(ingredient, index) in newIngredients" :key="index">{{ingredient}}</v-chip>
+                    </v-flex>
                     <v-dialog v-model="creationError" max-width="500px">
                         <v-card>
                             <v-card-actions class="dialogContent">
@@ -38,8 +30,26 @@
                     <v-btn @click="createRecipe()" class="creationButton">Créer</v-btn>
                 </v-flex>
             </v-expansion-panel-content>
+            <v-expansion-panel-content
+                    v-for="(recipe,index) in displayedRecipes"
+                    :key="index"
+            >
+                <div slot="header">{{recipe.name}}</div>
+                <v-flex class="ingredients">
+                    <v-chip @click="searchIngredient(ingredient)" class="ingredient"
+                            v-for="(ingredient,index) in recipe.ingredients" :key="index">{{ingredient}}
+                    </v-chip>
+                </v-flex>
+            </v-expansion-panel-content>
         </v-expansion-panel>
-    </v-content>
+        <v-pagination
+                v-model="page"
+                :length="totalPages"
+                :total-visible="5"
+                v-on:next="nextPage"
+                v-on:previous="previousPage"
+        ></v-pagination>
+    </v-layout>
 </template>
 
 <script>
@@ -50,16 +60,55 @@
         data: function () {
             return {
                 recipeName: "",
+                newIngredient: "",
                 newIngredients: [],
                 recipes: [],
                 displayedRecipes: [],
-                creationError: false
+                creationError: false,
+                page: 1,
+                totalPages: 0
             };
         },
         props: {
             filters: Object
         },
         methods: {
+            nextPage() {
+                console.log(this.page);
+                if(this.page < this.totalPages) {
+                    client.getRecipes(this.page + 1)
+                        .then(response => {
+                            if (response.ok) return response.json();
+                            else
+                                throw new Error("HTTP response status not code 200 as expected.");
+                        })
+                        .then(recipesJson => {
+                            this.recipes = recipesJson.filter((recipe)=>recipe.name);
+                            this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
+                        });
+                }
+            },
+            previousPage() {
+                if(this.page > 1) {
+                    client.getRecipes(this.page - 1)
+                        .then(response => {
+                            if (response.ok) return response.json();
+                            else
+                                throw new Error("HTTP response status not code 200 as expected.");
+                        })
+                        .then(recipesJson => {
+                            this.recipes = recipesJson.filter((recipe)=>recipe.name);
+                            this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
+                        });
+                }
+            },
+            addIngredient() {
+                this.newIngredients.push(this.newIngredient);
+                this.newIngredient = "";
+            },
+            removeIngredient(index) {
+               this.newIngredients.splice(index, 1);
+            },
             createRecipe() {
                 if(this.newIngredients.length === 0 || this.recipeName === "") {
                     this.creationError = true;
@@ -100,7 +149,16 @@
             }
         },
         mounted() {
-            client.getRecipes()
+            client.getRecipesNumber()
+                .then(response => {
+                    if (response.ok) return response.json();
+                    else
+                        throw new Error("HTTP response status not code 200 as expected.");
+                })
+                .then(resJson => {
+                    this.totalPages = Math.ceil(resJson.items / 8);
+                });
+            client.getRecipes(1)
                 .then(response => {
                     if (response.ok) return response.json();
                     else
@@ -124,6 +182,12 @@
 <style scoped>
     .mainContent {
         padding: 10px !important;
+        height: 80vh;
+    }
+
+    .panel {
+        max-height: 70vh;
+        overflow-y: auto;
     }
 
     .ingredients {
@@ -160,5 +224,12 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+    }
+    .ingredientsRow {
+        display: flex;
+        flex-direction: row;
+    }
+    .textField {
+        margin-bottom: 5px;
     }
 </style>

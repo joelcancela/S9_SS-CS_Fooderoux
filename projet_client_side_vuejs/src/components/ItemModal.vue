@@ -9,10 +9,10 @@
                     <v-flex xs4 class="productInfos row">
                         <v-flex xs3/>
                         <v-flex xs3 class="headerFlex">
-                            <label class="productName">{{item.product_name_fr}}</label>
+                            <label class="productName">{{item.name}}</label>
                         </v-flex>
                         <v-flex xs3 class="headerFlex">
-                            <v-img max-width="110px" :src="item.image"></v-img>
+                            <v-img max-width="110px" :src="item.imgUrl"></v-img>
                         </v-flex>
                         <v-flex xs3 class="headerFlex">
                             <v-flex class="score">
@@ -57,9 +57,12 @@
                                 <v-label>Vous connaissez le prix de l'ingrédient dans un magasin ? Ajoutez le !</v-label>
                             </v-layout>
                             <v-layout class="row">
-                                <v-select class="priceInput" :items="stores" label="Magasin" v-model="storeSelected" solo></v-select>
-                                <v-select class="priceInput" :items="towns" label="Ville" v-model="townSelected" solo></v-select>
-                                <v-text-field class="priceInput" label="Prix en €" color="#00cc00" v-model="price" type="number"></v-text-field>
+                                <v-select class="priceInput" label="Magasin" :items="stores" v-model="storeSelected"
+                                          solo clearable></v-select>
+                                <v-select class="priceInput" label="Ville" :items="towns"  v-model="townSelected"
+                                          solo clearable></v-select>
+                                <v-text-field class="priceInput" label="Prix en €" color="#00cc00" v-model="price" type="number"
+                                              solo clearable></v-text-field>
                                 <v-btn class="priceButton white--text" color="#00cc00" @click="addPrice">Ajouter</v-btn>
                             </v-layout>
                         </v-layout>
@@ -104,6 +107,9 @@ export default {
             price: ""
         };
     },
+    props: {
+        items: Object
+    },
     methods: {
         closeDialog() {
             this.dialog = false;
@@ -113,16 +119,16 @@ export default {
             this.dialog = true;
         },
         getNutritionImage() {
-            if (this.item.hasOwnProperty("nutrition_grade_fr")) {
-                let nutritionScore = this.item.nutrition_grade_fr.toLowerCase();
+            if (this.item.hasOwnProperty("nutrition_grade") && this.item.nutrition_grade !== "" && this.item.nutrition_grade !== "x") {
+                let nutritionScore = this.item.nutrition_grade.toLowerCase();
                 return require('../assets/n' + nutritionScore + '.png');
             } else {
                 return require('../assets/unknown.png');
             }
         },
         getOurScoreImage() {
-            if (this.item.hasOwnProperty("our_score")) {
-                let score = this.item.our_score.toLowerCase();
+            if (this.item.hasOwnProperty("score") && this.item.score !== "" && this.item.score !== "x") {
+                let score = this.item.score.toLowerCase();
                 return require('../assets/n' + score + '.png');
             } else {
                 return require('../assets/unknown.png');
@@ -148,8 +154,10 @@ export default {
                 Client.postPrice(this.item.id, parseInt(this.price), this.storeSelected + " " + this.townSelected)
                     .then(() => {
                         this.alert = true;
-                        this.debouncedRemoveSuccessAlert()
-                    });
+                        this.debouncedRemoveSuccessAlert();
+                        this.price = this.storeSelected = this.townSelected = "";
+                    })
+                    .catch(() => { this.price = this.storeSelected = this.townSelected = ""; });
             }
         },
         removeAlert() {
@@ -158,9 +166,6 @@ export default {
         removeSuccessAlert() {
             this.alertSuccess = false;
         }
-    },
-    props: {
-        items: Object
     },
     created: function () {
         this.debouncedRemoveAlert = _.debounce(this.removeAlert, 3000);

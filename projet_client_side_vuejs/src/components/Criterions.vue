@@ -23,10 +23,14 @@
             </v-flex>
 
             <v-flex xs9 class="criterionFilter">
-                <v-text-field class="selector" label="Quantité" color="#00cc00" v-model="quantity"></v-text-field>
-                <v-text-field class="selector" label="Ingrédient" color="#00cc00" v-model="ingredient"></v-text-field>
-                <v-select v-on:click:clear="clearSelect()" clearable class="selector" :items="stores" label="Magasin" v-model="store" solo></v-select>
-                <v-select v-on:click:clear="clearSelect()" clearable class="selector" :items="nutriscores" label="Nutriscore" v-model="nutriscore" solo></v-select>
+                <v-select class="selector" label="Nutriscore" v-on:click:clear="clearSelect()" :items="scores"  v-model="nutriscore"
+                          clearable solo></v-select>
+                <v-text-field class="selector" label="Quantité" color="#00cc00" v-model="quantity"
+                              clearable solo></v-text-field>
+                <v-text-field class="selector" label="Ingrédient" color="#00cc00" v-model="ingredient"
+                              clearable solo></v-text-field>
+                <v-text-field class="selector" label="Additif" color="#00cc00" v-model="additive"
+                              clearable solo></v-text-field>
             </v-flex>
         </v-layout>
     </v-layout>
@@ -44,11 +48,9 @@ export default {
         return {
             radios: "",
             quantity: "",
-            store: "",
+            additive: "",
             nutriscore: "",
             ingredient: "",
-            stores: ["Leclerc", "Carrefour", "Auchan", "Lidl", "Monoprix"],
-            nutriscores: ["A", "B", "C", "D", "E"],
             scores: ["A", "B", "C", "D", "E"],
         }
     },
@@ -60,7 +62,7 @@ export default {
             this.$emit("update_filters", {
                 sortBy: this.radios,
                 quantity: this.quantity,
-                store: this.store,
+                additive: this.additive,
                 nutriscore: this.nutriscore,
                 ingredient: this.ingredient
             });
@@ -69,9 +71,9 @@ export default {
     watch: {
         radios: function() {this.sendUpdatedFilters()},
         quantity: function() {this.sendUpdatedFilters()},
-        store: function() {this.sendUpdatedFilters()},
+        additive: function() {this.sendUpdatedFilters()},
         nutriscore: function() {this.sendUpdatedFilters()},
-        score: function() {this.sendUpdatedFilters()}
+        ingredient: function() {this.sendUpdatedFilters()}
     }
 };
 </script>
