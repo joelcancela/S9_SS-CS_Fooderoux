@@ -7,7 +7,7 @@ class Food {
         this.serving_size = food_nosql.quantity || food_nosql.serving_size || "";
         this.nutrition_grade = food_nosql.nutrition_grade_fr || food_nosql.nutrition_grades || "";
         this.ingredients = food_nosql.ingredients || food_nosql.ingredients_tags || food_nosql.ingredients_text || food_nosql.ingredients_text_fr || "";
-        this.additives = food_nosql.additives || food_nosql.additives_original_tags || [];
+        this.additives = food_nosql.additives || [];
         this.nutriments = food_nosql.nutriments || {};
         this.allergens = food_nosql.allergens || food_nosql.allergens_tags || food_nosql.allergens_from_ingredients || food_nosql.traces || [];
         this.vitamins = food_nosql.vitamins_tags || [];

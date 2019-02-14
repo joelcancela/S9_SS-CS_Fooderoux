@@ -46,8 +46,9 @@ function getFoods(req, res, next) {
         }
     } if (req.query.ingredients != null) {
         criterias.push({ $or: [{ ingredients_text_fr: reg, ingredients_text: reg, ingredients_tags: regArray, ingredients: regArray }] });
-    } if (req.query.additives != null) {//TODO: invert condition
-        criterias.push({ $or: [{ additives: reg, additives_original_tags: reg }] });
+    } if (req.query.additives != null) {
+        let criteria_additives = (req.query.additives == "" ? {$in: [null, []]} : { '$regex': '^((?!' + req.query.additives + ').)*$', '$options': 'i' });
+        criterias.push({ additives: criteria_additives });
     } if (req.query.nutriments != null) {
         criterias.push({ nutriments: reg });
     } if (req.query.allergens != null) {
