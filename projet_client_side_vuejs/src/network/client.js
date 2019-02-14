@@ -29,6 +29,10 @@ export function getPriceFromItemID(itemID) {
     return get(URL + "/api/foods/" + itemID + "/price");
 }
 
+export function getRecipes() {
+    return get(URL + "/api/recipes/");
+}
+
 function get(url) {
     return fetch(url, {
             method: 'get',
