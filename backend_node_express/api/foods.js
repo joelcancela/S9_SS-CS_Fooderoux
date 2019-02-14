@@ -9,7 +9,7 @@ function getFoodCount(req, res) {
         res.send({ items: stats.count });
     });
 }
-//TODO: fix sorting with null values
+
 function getFoods(req, res, next) {
     let pagesize = 50;
     let n = 1;
@@ -58,24 +58,98 @@ function getFoods(req, res, next) {
     if (req.query.sortBy != null && req.query.sortBy != "") {
         switch (req.query.sortBy) {
             case "name":
-                sortObject = { product_name_fr: 1 };
-                break;
+                foodDb().aggregate([
+                    {
+                        $addFields: {
+                            "product_name_fr": {
+                                $ifNull: ['$product_name_fr', '$product_name_en']
+                            }
+                        },
+                    },
+                    {
+                        $addFields: {
+                            "product_name_fr": {
+                                $ifNull: ['$product_name_fr', '$product_name']
+                            }
+                        },
+                    },
+                    {
+                        $addFields: {
+                            "product_name_fr": {
+                                $ifNull: ['$product_name_fr', false]
+                            }
+                        },
+                    },
+                    {
+                        $addFields: {
+                            "product_name_fr": {
+                                $switch: {
+                                    branches: [
+                                        { case: { "$eq": ["$product_name_fr", ""] }, then: "Z_IngrédientMystère" },
+                                        { case: { "$eq": ["$product_name_fr", false] }, then: "Z_IngrédientMystère" },
+                                    ],
+                                    default: "$product_name_fr"
+                                }
+                            }
+                        },
+                    },
+                    {
+                        $addFields: {
+                            "insensitive": { "$toLower": "$product_name_fr" }
+                        },
+                    },
+                    { $sort: { insensitive: 1 } },
+                    { $skip: (pagesize * (n - 1)) },
+                    { $limit: pagesize },
+                ], { allowDiskUse: true }).toArray(function (err, docs) {
+                    assert.equal(err, null);
+                    if (req.query.debug != null) {
+                        res.send(docs);
+                    } else {
+                        let response = [];
+                        docs.forEach(function (element) {
+                            response.push(new Food(element));
+                        });
+                        res.send(response);
+                    }
+                });
+                return;
             case "nutriscore":
-                sortObject = { nutrition_grade_fr: 1 };
-                break;
+                foodDb().aggregate([
+                    { $addFields: { nutrition_grade_fr: { $ifNull: ["$nutrition_grade_fr", 'x'] } } },
+                    { $sort: { nutrition_grade_fr: 1 } },
+                    { $skip: (pagesize * (n - 1)) },
+                    { $limit: pagesize },
+                ]).toArray(function (err, docs) {
+                    assert.equal(err, null);
+                    if (req.query.debug != null) {
+                        res.send(docs);
+                    } else {
+                        let response = [];
+                        docs.forEach(function (element) {
+                            response.push(new Food(element));
+                        });
+                        res.send(response);
+                    }
+                });
+                return;
             case "price":
                 foodDb().aggregate([
                     { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
                     { $sort: { "currentPrice.price": 1 } },
-                    { $limit: pagesize },
-                    { $skip: pagesize * (n - 1) }
+                    { $skip: (pagesize * (n - 1)) },
+                    { $limit: pagesize }
                 ]).toArray(function (err, docs) {
                     assert.equal(err, null);
-                    let response = [];
-                    docs.forEach(function (element) {
-                        response.push(new Food(element));
-                    });
-                    res.send(response);
+                    if (req.query.debug != null) {
+                        res.send(docs);
+                    } else {
+                        let response = [];
+                        docs.forEach(function (element) {
+                            response.push(new Food(element));
+                        });
+                        res.send(response);
+                    }
                 });
                 return;
             default:
@@ -84,11 +158,15 @@ function getFoods(req, res, next) {
     }
     foodDb().find(searchObject).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
         assert.equal(err, null);
-        let response = [];
-        docs.forEach(function (element) {
-            response.push(new Food(element));
-        });
-        res.send(response);
+        if (req.query.debug != null) {
+            res.send(docs);
+        } else {
+            let response = [];
+            docs.forEach(function (element) {
+                response.push(new Food(element));
+            });
+            res.send(response);
+        }
     });
 }
 
@@ -97,10 +175,14 @@ function getFoodById(req, res) {
     if (req.params.itemId != null) {
         foodDb().find({ _id: req.params.itemId }).toArray(function (err, docs) {
             assert.equal(err, null);
-            docs.forEach(function (element) {
-                response.push(new Food(element));
-            });
-            res.send(response);
+            if (req.query.debug != null) {
+                res.send(docs);
+            } else {
+                docs.forEach(function (element) {
+                    response.push(new Food(element));
+                });
+                res.send(response);
+            }
         });
     } else {
         res.send(response);
