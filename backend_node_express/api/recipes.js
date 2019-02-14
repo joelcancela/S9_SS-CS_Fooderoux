@@ -60,7 +60,6 @@ function getRecipeById(req, res) {
 function getRecipePrice(req, res) {
     let id = req.params.recipeId;
     let price = [];
-    let reducer = (accumulator, currentValue) => accumulator + currentValue;
 
     recipeDb().find(ObjectId(id)).toArray(function (err, docs) {
         if (err != null) {
@@ -72,6 +71,7 @@ function getRecipePrice(req, res) {
                     let reg = new RegExp(".*" + element + ".*", "i");
                     let searchObject = { $or: [{ product_name: reg }, { product_name_en: reg }, { product_name_fr: reg }] };
                     foodDb().find(searchObject).toArray(function (err, docs) {
+                        price.push([]);
                         if (item.ingredients.indexOf(element) == item.ingredients.length - 1 && docs.length == 0) {
                             res.send({ 'price': 0.0 });
                             return;
@@ -80,12 +80,12 @@ function getRecipePrice(req, res) {
                             docs.forEach(function (element_i) {
                                 if (element_i.pricing != undefined && element_i.pricing.length > 0) {
                                     element_i.pricing.forEach(function (pricing) {
-                                        price.push(pricing.price);
+                                        price[item.ingredients.indexOf(element)].push(pricing.price);
                                     })
                                 }
                                 if (item.ingredients.indexOf(element) == item.ingredients.length - 1 && docs.indexOf(element_i) == docs.length - 1) {
                                     if (price.length > 0) {
-                                        res.send({ 'price': price.reduce(reducer) / price.length });
+                                        res.send({ 'price': price.map(item => item.reduce((total, value) => total + value, 0) / item.length).filter(x => x).reduce((total, value) => total + value, 0) })
                                         return;
                                     } else {
                                         res.send({ 'price': 0.0 });
