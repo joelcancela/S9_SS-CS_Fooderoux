@@ -34,7 +34,16 @@ function getFoods(req, res, next) {
     let reg = new RegExp("[^\s]*", "i");
     let regArray = { $exists: true, $ne: [] };
     if (req.query.nutrition_score != null) {
-        criterias.push({ $or: [{ nutrition_grade_fr: reg, nutrition_grades: reg }] });
+        if (req.query.nutrition_score == "") {
+            criterias.push({ $or: [{ nutrition_grade_fr: reg, nutrition_grades: reg }] });
+        } else {
+            let grade = req.query.nutrition_score.charAt(0);
+            let grade_array = ['x', 'e', 'd', 'c', 'b', 'a'];
+            if (grade_array.includes(grade) && grade_array.indexOf(grade) != -1) {
+                grade_array.splice(0, grade_array.indexOf(grade));
+            }
+            criterias.push({ $or: [{ nutrition_grade_fr: { $in: grade_array }, nutrition_grades: { $in: grade_array } }] });
+        }
     } if (req.query.ingredients != null) {
         criterias.push({ $or: [{ ingredients_text_fr: reg, ingredients_text: reg, ingredients_tags: regArray, ingredients: regArray }] });
     } if (req.query.additives != null) {
