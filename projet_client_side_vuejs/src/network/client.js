@@ -33,6 +33,10 @@ export function getRecipes() {
     return get(URL + "/api/recipes/");
 }
 
+export function postPrice(itemID, price, store) {
+    return post(URL + "/api/foods/" + itemID + "/price", {price: price, store: store});
+}
+
 function get(url) {
     return fetch(url, {
             method: 'get',

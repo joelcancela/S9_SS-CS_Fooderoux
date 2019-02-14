@@ -17,13 +17,13 @@
                         <v-flex xs3 class="headerFlex">
                             <v-flex class="score">
                                 <v-img width="70px" :src="getNutritionImage()"></v-img>
-                                <v-flex class="labels">
+                                <v-flex class="scoreText">
                                     <v-label text-center>Nutriscore</v-label>
                                 </v-flex>
                             </v-flex>
                             <v-flex class="score">
                                 <v-img width="70px" :src="getOurScoreImage()"></v-img>
-                                <v-flex class="labels">
+                                <v-flex class="scoreText">
                                     <v-label text-center>Score</v-label>
                                 </v-flex>
                             </v-flex>
@@ -44,16 +44,23 @@
                         </v-card>
                     </v-flex>
 
+                    <v-alert v-model="alert" dismissible type="warning" style="width: 100%" transition="scale-transition">
+                        Le formulaire n'est pas complet.
+                    </v-alert>
+                    <v-alert v-model="alertSuccess" dismissible type="success" style="width: 100%" transition="scale-transition">
+                        Merci. Nous avons bien reçu l'information.
+                    </v-alert>
+
                     <v-flex xs3 class="prices">
                         <v-layout class="column">
                             <v-layout style="padding-top: 20px; padding-bottom: 10px">
                                 <v-label>Vous connaissez le prix de l'ingrédient dans un magasin ? Ajoutez le !</v-label>
                             </v-layout>
                             <v-layout class="row">
-                                <v-select class="priceInput" :items="stores" label="Magasin" solo></v-select>
-                                <v-select class="priceInput" :items="towns" label="Ville" solo></v-select>
-                                <v-text-field class="priceInput" label="Prix en €" color="#00cc00"></v-text-field>
-                                <v-btn class="priceButton white--text" color="#00cc00">Ajouter</v-btn>
+                                <v-select class="priceInput" :items="stores" label="Magasin" v-model="storeSelected" solo></v-select>
+                                <v-select class="priceInput" :items="towns" label="Ville" v-model="townSelected" solo></v-select>
+                                <v-text-field class="priceInput" label="Prix en €" color="#00cc00" v-model="price" type="number"></v-text-field>
+                                <v-btn class="priceButton white--text" color="#00cc00" @click="addPrice">Ajouter</v-btn>
                             </v-layout>
                         </v-layout>
                     </v-flex>
@@ -70,14 +77,21 @@
 </template>
 
 <script>
+import _ from 'lodash';
+import * as Client from "../network/client"
+
 export default {
     name: "ItemModal",
     data: function() {
         return {
             dialog: false,
+            alert: false,
+            alertSuccess: false,
             item: {},
             stores: ["Leclerc", "Carrefour", "Auchan", "Lidl", "Monoprix"],
+            storeSelected: "",
             towns: ["Antibes", "Nice", "Biot", "Montauroux"],
+            townSelected: "",
             prices: [
                 { shop: "carrefour", price: 5 },
                 { shop: "leclerc", price: 10 },
@@ -87,6 +101,7 @@ export default {
                 { shop: "leclerc", price: 10 },
                 { shop: "leclerc", price: 10 }
             ],
+            price: ""
         };
     },
     methods: {
@@ -124,10 +139,32 @@ export default {
         },
         capitalizeFirstLetter(str) {
             return str.charAt(0).toUpperCase() + str.slice(1);
+        },
+        addPrice() {
+            if (this.storeSelected === "" || this.townSelected === "" || this.price === "") {
+                this.alert = true;
+                this.debouncedRemoveAlert();
+            } else {
+                Client.postPrice(this.item.id, parseInt(this.price), this.storeSelected + " " + this.townSelected)
+                    .then(() => {
+                        this.alert = true;
+                        this.debouncedRemoveSuccessAlert()
+                    });
+            }
+        },
+        removeAlert() {
+            this.alert = false;
+        },
+        removeSuccessAlert() {
+            this.alertSuccess = false;
         }
     },
     props: {
         items: Object
+    },
+    created: function () {
+        this.debouncedRemoveAlert = _.debounce(this.removeAlert, 3000);
+        this.debouncedRemoveSuccessAlert = _.debounce(this.removeSuccessAlert, 3000);
     }
 };
 </script>
@@ -147,6 +184,9 @@ export default {
     font-family: Roboto, Arial, Helvetica, sans-serif;
     font-size: x-large;
     color: dimgrey;
+}
+.scoreText {
+    margin-top: 5px
 }
 .productInfos {
     display: flex;
@@ -193,12 +233,6 @@ export default {
     right: 0;
 }
 .score {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-.labels {
     display: flex;
     flex-direction: column;
     align-items: center;
