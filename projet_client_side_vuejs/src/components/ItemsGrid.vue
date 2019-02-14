@@ -10,7 +10,7 @@
 
                                 <v-layout row align-center justify-center>
                                     <v-flex xs9 class="itemName">
-                                        <label class="productName">{{item.product_name}}</label>
+                                        <label class="productName">{{item.product_name_fr}}</label>
                                     </v-flex>
                                     <v-flex xs3 v-on:click.stop>
                                         <v-checkbox @change="itemSelect" v-model="item.selected" color="#00cc00"/>
