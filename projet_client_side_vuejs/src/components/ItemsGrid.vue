@@ -10,7 +10,7 @@
 
                                 <v-layout row align-center justify-center>
                                     <v-flex xs9 class="itemName">
-                                        <v-label>{{item.product_name}}</v-label>
+                                        <label class="productName">{{item.product_name}}</label>
                                     </v-flex>
                                     <v-flex xs3 v-on:click.stop>
                                         <v-checkbox @change="itemSelect" v-model="item.selected" color="#00cc00"/>
@@ -130,6 +130,9 @@
                 if (this.filters.hasOwnProperty("quantity") && this.filters.quantity !== "") {
                     params.quantity = this.filters.quantity;
                 }
+                if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient !== "") {
+                    params.ingredient = this.filters.ingredient;
+                }
                 if (this.filters.hasOwnProperty("store") && this.filters.store !== "" && !this.filters.store.includes("-")) {
                     params.store = this.filters.store;
                 }
@@ -144,10 +147,10 @@
         },
         watch: {
             search: function () {
-                this.debouncedGetAnswer()
+                this.debouncedGetAnswer();
             },
             filters: function () {
-                this.debouncedGetAnswer()
+                this.debouncedGetAnswer();
             }
         },
         created: function () {
@@ -167,7 +170,7 @@
     }
     .card {
         width: 150px;
-        height: 220px;
+        height: 200px;
         padding-top: 5px;
         padding-left: 5px;
         padding-right: 5px;
@@ -179,6 +182,10 @@
     }
     .itemName {
         margin-left: 10px;
+    }
+    .productName {
+        font-family: Roboto, Arial, Helvetica, sans-serif;
+        font-size: small;
     }
     .comparisonButton {
         height: 5vh;

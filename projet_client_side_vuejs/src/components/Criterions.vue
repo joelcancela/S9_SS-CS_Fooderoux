@@ -1,30 +1,34 @@
 <template>
     <v-layout column class="mainContainer">
-        <v-flex xs1 class="titleContainer">
-            <v-img class="filterImg" width="20%" :src="require('../assets/filter.png')"/>
-            <v-label>Trier les résultats</v-label>
-        </v-flex>
+        <v-layout column class="firstContainer">
+            <v-flex xs3 class="titleContainer">
+                <v-img class="filterImg" width="20%" :src="require('../assets/filter.png')"/>
+                <v-label>Trier les résultats</v-label>
+            </v-flex>
 
-        <v-flex xs5>
-            <v-radio-group class="criterion" v-model="radios" column>
-                <Criterion name="Aucun tri" :imgPath="require('../assets/no.png')"/>
-                <Criterion name="Par nom" :imgPath="require('../assets/name.png')"/>
-                <Criterion name="Par prix" :imgPath="require('../assets/price.png')"/>
-                <Criterion name="Par nutriscore" :imgPath="require('../assets/nutriscore.png')"/>
-            </v-radio-group>
-        </v-flex>
+            <v-flex xs9>
+                <v-radio-group class="criterion" v-model="radios" column>
+                    <Criterion name="Aucun tri" :imgPath="require('../assets/no.png')"/>
+                    <Criterion name="Par nom" :imgPath="require('../assets/name.png')"/>
+                    <Criterion name="Par prix" :imgPath="require('../assets/price.png')"/>
+                    <Criterion name="Par nutriscore" :imgPath="require('../assets/nutriscore.png')"/>
+                </v-radio-group>
+            </v-flex>
+        </v-layout>
 
-        <v-flex xs1 class="titleContainer">
-            <v-img class="filterImg" width="20%" :src="require('../assets/filter.png')"/>
-            <v-label>Filtrer les résultats</v-label>
-        </v-flex>
+        <v-layout column class="secondContainer">
+            <v-flex xs3 class="titleContainer">
+                <v-img class="filterImg" width="20%" :src="require('../assets/filter.png')"/>
+                <v-label>Filtrer les résultats</v-label>
+            </v-flex>
 
-        <v-flex xs5 class="criterionFilter">
-            <v-text-field class="selector" label="Quantité" color="#00cc00" v-model="quantity"></v-text-field>
-            <v-select class="selector" :items="stores" label="Magasin" v-model="store" solo></v-select>
-            <v-select class="selector" :items="nutriscores" label="Nutriscore" v-model="nutriscore" solo></v-select>
-            <v-select class="selector" :items="scores" label="Score" v-model="score" solo></v-select>
-        </v-flex>
+            <v-flex xs9 class="criterionFilter">
+                <v-text-field class="selector" label="Quantité" color="#00cc00" v-model="quantity"></v-text-field>
+                <v-text-field class="selector" label="Ingrédient" color="#00cc00" v-model="ingredient"></v-text-field>
+                <v-select class="selector" :items="stores" label="Magasin" v-model="store" solo></v-select>
+                <v-select class="selector" :items="nutriscores" label="Nutriscore" v-model="nutriscore" solo></v-select>
+            </v-flex>
+        </v-layout>
     </v-layout>
 </template>
 
@@ -42,7 +46,7 @@ export default {
             quantity: "",
             store: "",
             nutriscore: "",
-            score: "",
+            ingredient: "",
             stores: ["-- Magasin --", "Leclerc", "Carrefour", "Auchan", "Lidl", "Monoprix"],
             nutriscores: ["-- Nutriscore --", "A", "B", "C", "D", "E"],
             scores: ["-- Score --", "A", "B", "C", "D", "E"],
@@ -55,7 +59,7 @@ export default {
                 quantity: this.quantity,
                 store: this.store,
                 nutriscore: this.nutriscore,
-                score: this.score
+                ingredient: this.ingredient
             });
         }
     },
@@ -71,11 +75,16 @@ export default {
 
 <style scoped>
     .mainContainer {
-        height: 90vh;
+        height: 80vh;
+    }
+    .firstContainer {
+        height: 40vh;
+    }
+    .secondContainer {
+        height: 50vh;
     }
     .filterImg {
-      margin-top: 5%;
-      margin-bottom: 5%;
+        margin-top: 5%;
     }
     .titleContainer {
         display: flex;

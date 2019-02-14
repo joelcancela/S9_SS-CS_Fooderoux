@@ -57,7 +57,8 @@
     }
     .catName {
         color: white;
-        font-size: 1.5em;
+        font-family: Roboto, Arial, Helvetica, sans-serif;
+        font-size: large;
     }
     .catImg {
         margin-left: 15px;
