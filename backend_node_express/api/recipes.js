@@ -2,7 +2,7 @@
 const recipeDb = require('../mongodb/mongo').getRecipeDb; // Connection to recipe collection
 const foodDb = require('../mongodb/mongo').getFoodDb; // Connection to food collection
 const assert = require('assert'); // Assertions
-const ObjectId = require('mongodb').ObjectId; //Used to make Mongo recognize ids (sometimes he doesn't :( )
+const ObjectId = require('mongodb').ObjectId; //Used to make Mongo recognize ids (sometimes it doesn't :( )
 
 
 function getAllRecipes(req, res) {

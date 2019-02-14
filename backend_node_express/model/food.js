@@ -3,6 +3,7 @@ class Food {
         this._id = food_nosql._id;
         this.name = food_nosql.product_name_fr || food_nosql.product_name_en || food_nosql.product_name || "z_IngrédientMystère";
         this.name = this.name.charAt(0).toUpperCase() + this.name.slice(1);
+        this.name = this.name.trim();
         this.serving_size = food_nosql.quantity || food_nosql.serving_size || "";
         this.nutrition_grade = food_nosql.nutrition_grade_fr || food_nosql.nutrition_grades || "";
         this.ingredients = food_nosql.ingredients || food_nosql.ingredients_tags || food_nosql.ingredients_text || food_nosql.ingredients_text_fr || "";
