@@ -133,10 +133,10 @@
                 if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient !== "") {
                     params.ingredient = this.filters.ingredient;
                 }
-                if (this.filters.hasOwnProperty("store") && this.filters.store !== "" && !this.filters.store.includes("-")) {
+                if (this.filters.hasOwnProperty("store") && this.filters.store && this.filters.store !== "" && !this.filters.store.includes("-")) {
                     params.store = this.filters.store;
                 }
-                if (this.filters.hasOwnProperty("nutriscore") && this.filters.nutriscore !== "" && !this.filters.nutriscore.includes("-")) {
+                if (this.filters.hasOwnProperty("nutriscore") && this.filters.nutriscore && this.filters.nutriscore !== "" && !this.filters.nutriscore.includes("-")) {
                     params["nutrition_score"] = this.filters.nutriscore;
                 }
                 if (this.filters.hasOwnProperty("sortBy") && this.filters.sortBy !== "") {

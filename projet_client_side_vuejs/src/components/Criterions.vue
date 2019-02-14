@@ -25,8 +25,8 @@
             <v-flex xs9 class="criterionFilter">
                 <v-text-field class="selector" label="Quantité" color="#00cc00" v-model="quantity"></v-text-field>
                 <v-text-field class="selector" label="Ingrédient" color="#00cc00" v-model="ingredient"></v-text-field>
-                <v-select class="selector" :items="stores" label="Magasin" v-model="store" solo></v-select>
-                <v-select class="selector" :items="nutriscores" label="Nutriscore" v-model="nutriscore" solo></v-select>
+                <v-select v-on:click:clear="clearSelect()" clearable class="selector" :items="stores" label="Magasin" v-model="store" solo></v-select>
+                <v-select v-on:click:clear="clearSelect()" clearable class="selector" :items="nutriscores" label="Nutriscore" v-model="nutriscore" solo></v-select>
             </v-flex>
         </v-layout>
     </v-layout>
@@ -47,12 +47,15 @@ export default {
             store: "",
             nutriscore: "",
             ingredient: "",
-            stores: ["-- Magasin --", "Leclerc", "Carrefour", "Auchan", "Lidl", "Monoprix"],
-            nutriscores: ["-- Nutriscore --", "A", "B", "C", "D", "E"],
-            scores: ["-- Score --", "A", "B", "C", "D", "E"],
+            stores: ["Leclerc", "Carrefour", "Auchan", "Lidl", "Monoprix"],
+            nutriscores: ["A", "B", "C", "D", "E"],
+            scores: ["A", "B", "C", "D", "E"],
         }
     },
     methods: {
+        clearSelect(){
+            this.sendUpdatedFilters();
+        },
         sendUpdatedFilters() {
             this.$emit("update_filters", {
                 sortBy: this.radios,

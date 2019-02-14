@@ -14,7 +14,7 @@
       }"
     >
       <gmap-marker
-        v-for="(store, index) in stores"
+        v-for="(store, index) in displayedStores"
         :key="index"
         @click="openInfosWindow()"
         :clickable="true"
@@ -26,7 +26,7 @@
           v-on:closeclick="openInfosWindow()"
           :opened="openInfos"
           ><v-img width="70px" :src="require('../assets/leclerc.png')"></v-img
-          >Leclerc Antibes</gmap-info-window
+          >{{store.name}}</gmap-info-window
         >
       </gmap-marker>
     </gmap-map>
@@ -40,7 +40,8 @@ import * as client from "../network/client";
 export default {
   name: "MapView",
   props: {
-    region: String
+    region: String,
+    search: String
   },
   data: function() {
     return {
@@ -50,7 +51,8 @@ export default {
       },
       openInfos: false,
       mapLoaded: false,
-      stores: []
+      stores: [],
+      displayedStores: []
     };
   },
   mounted: function() {
@@ -65,14 +67,16 @@ export default {
   },
   methods: {
     getStores() {
-      client.getStoresFromRegion(this.region)
-         .then(response => {
-             if (response.ok) return response.json();
-             else throw new Error("HTTP response status not code 200 as expected.");
-         })
-         .then((storesJson)=>{
-           this.stores = storesJson.stores;
-         });
+      client.getStoresFromRegion("us")
+        .then(response => {
+          if (response.ok) return response.json();
+          else
+            throw new Error("HTTP response status not code 200 as expected.");
+        })
+        .then(storesJson => {
+          this.stores = storesJson.stores;
+          this.displayedStores = storesJson.stores;
+        });
     },
     parsePosition(position) {
       let lat = parseInt(position.lat);
@@ -82,8 +86,6 @@ export default {
         lng
       };
     },
-    getIso(lat, lng) {},
-    getStoresArray(iso) {},
     openInfosWindow() {
       this.openInfos = !this.openInfos;
     },
@@ -104,10 +106,21 @@ export default {
       } else {
         return null;
       }
+    },
+    filterStores() {
+        this.displayedStores = this.stores.filter((store)=> this.search !== "" ? store.name.toLowerCase().includes(this.search.toLowerCase()) : store)
     }
   },
   computed: {
     google: gmapApi
+  },
+  watch: {
+    search: function () {
+        this.debouncedGetAnswer()
+    }
+  },
+  created: function () {
+      this.debouncedGetAnswer = _.debounce(this.filterStores, 800);
   }
 };
 </script>
@@ -120,7 +133,7 @@ export default {
 }
 .gmap {
   width: 99%;
-  height: 82%;
+  height: 79%;
 }
 template {
   height: 100%;

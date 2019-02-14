@@ -55,6 +55,7 @@
               <component
                 :search="search"
                 :filters="filters"
+                v-on:searchIngredient="(ingredient) => autoSearch(ingredient)"
                 v-bind:is="mainComponent"
               />
             </v-flex>
@@ -131,16 +132,20 @@ export default {
       this.coloredIcon = require("../assets/recipe-book_Colored.png");
       this.placeholder = "Chercher une recette";
       this.mainComponent = "RecipeView";
-      this.filtersComponent = "Criterions";
+      this.filtersComponent = "RecipeFilters";
     },
     changeToMap() {
       this.coloredIcon = require("../assets/store_Colored.png");
       this.placeholder = "Chercher un magasin";
       this.mainComponent = "MapView";
-      this.filtersComponent = "RecipeFilters";
+      this.filtersComponent = "";
     },
     updateFilters(filters) {
       this.filters = filters;
+    },
+    autoSearch(ingredient) {
+        this.search = ingredient;
+        this.changeToDiet();
     }
   }
 };
