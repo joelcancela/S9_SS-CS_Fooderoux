@@ -27,11 +27,17 @@ function getAllRecipes(req, res) {
                 break;
         }
     }
-    recipeDb().find({}).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
+    let searchObject = {};
+    if (req.query.contains != null) {
+        let regex = [new RegExp(".*" + req.query.contains + ".*", "i")];
+        searchObject = { "ingredients": { $in: regex } };
+    }
+    recipeDb().find(searchObject).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
         assert.equal(err, null);
         res.send(docs);
     });
 }
+
 
 function getRecipeById(req, res) {
     let id = req.params.recipeId;
