@@ -6,11 +6,11 @@
                     <v-layout row wrap>
                         <v-flex v-for="(item, n) of items" :key="n" shrink pa-1>
                             <v-card @click="dialogClicked(item)" class="card">
-                                <v-img height="120px" class="image" :src="item.image"></v-img>
+                                <v-img height="120px" class="image" :src="item.imgUrl"></v-img>
 
                                 <v-layout row align-center justify-center>
                                     <v-flex xs9 class="itemName">
-                                        <label class="productName">{{item.product_name_fr}}</label>
+                                        <label class="productName">{{item.name}}</label>
                                     </v-flex>
                                     <v-flex xs3 v-on:click.stop>
                                         <v-checkbox @change="itemSelect" v-model="item.selected" color="#00cc00"/>
@@ -64,50 +64,11 @@
                     })
                     .then((response) => {
                         for (let i in response) {
-                            response[i].image = "https://paulinediet.fr/wp-content/uploads/2018/02/fruits.png";
                             response[i].selected = false;
-                            this.getItemImage(response[i].id, i);
-                            this.getAverageItemPrice(response[i].id, i);
-                            this.getOurItemScore(response[i].id, i);
                         }
                         this.items = response;
                     })
                     .catch((error) => console.log(error));
-            },
-            getItemImage(itemId, index) {
-                Client.getImageFromItemID(itemId)
-                    .then((response) => {
-                        if (response.ok) return response.json();
-                        else throw new Error("HTTP response status not code 200 as expected.");
-                    })
-                    .then((response) => {
-                        this.items[index].image = response.link;
-                    })
-                    .catch(() => {});
-            },
-            getAverageItemPrice(itemId, index) {
-                Client.getPriceFromItemID(itemId)
-                    .then((response) => {
-                        if (response.ok) return response.json();
-                        else throw new Error("HTTP response status not code 200 as expected.");
-                    })
-                    .then((response) => {
-                        this.items[index].price = response.item.price + "€";
-                    })
-                    .catch(() => {
-                        this.items[index].price = "Inconnu"
-                    });
-            },
-            getOurItemScore(itemId, index) {
-                Client.getScoreFromItemID(itemId)
-                    .then((response) => {
-                        if (response.ok) return response.json();
-                        else throw new Error("HTTP response status not code 200 as expected.");
-                    })
-                    .then((response) => {
-                        this.items[index].our_score = response.score;
-                    })
-                    .catch(() => {});
             },
             getSelectedItems() {
                 return this.items === undefined ? [] : this.items.filter(item => item.selected);
@@ -127,17 +88,17 @@
             },
             generateParams() {
                 let params = {name: this.search, limit: 20};
-                if (this.filters.hasOwnProperty("quantity") && this.filters.quantity !== "") {
+                if (this.filters.hasOwnProperty("quantity") && this.filters.quantity !== "" && this.filters.quantity !== null) {
                     params.quantity = this.filters.quantity;
                 }
-                if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient !== "") {
-                    params.ingredient = this.filters.ingredient;
+                if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient !== "" && this.filters.ingredient !== null) {
+                    params.ingredients = this.filters.ingredient;
                 }
-                if (this.filters.hasOwnProperty("store") && this.filters.store && this.filters.store !== "" && !this.filters.store.includes("-")) {
-                    params.store = this.filters.store;
+                if (this.filters.hasOwnProperty("additive") && this.filters.additive !== "" && this.filters.additive !== null) {
+                    params.additives = this.filters.additive;
                 }
-                if (this.filters.hasOwnProperty("nutriscore") && this.filters.nutriscore && this.filters.nutriscore !== "" && !this.filters.nutriscore.includes("-")) {
-                    params["nutrition_score"] = this.filters.nutriscore;
+                if (this.filters.hasOwnProperty("nutriscore") && this.filters.nutriscore && this.filters.nutriscore !== "") {
+                    params["nutrition_score"] = this.filters.nutriscore.toLowerCase();
                 }
                 if (this.filters.hasOwnProperty("sortBy") && this.filters.sortBy !== "") {
                     params.sortBy = this.filters.sortBy;

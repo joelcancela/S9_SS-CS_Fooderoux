@@ -30,13 +30,13 @@
                     <v-flex class="productsTable">
                         <v-flex grow v-for="(item, index) of items" class="column c1" :key="index">
                             <v-flex justify-center align-center class="comparisonItem comparisonItemSmall odd values">
-                                <v-label>{{item.product_name_fr}}</v-label>
+                                <v-label>{{item.name}}</v-label>
                             </v-flex>
                             <v-flex justify-center align-center class="comparisonItem comparisonItemBig even values">
-                                <v-img max-width="80px" :src="item.image"></v-img>
+                                <v-img max-width="80px" :src="item.imgUrl"></v-img>
                             </v-flex>
                             <v-flex justify-center align-center class="comparisonItem comparisonItemSmall odd values">
-                                <v-label>{{item.price}}</v-label>
+                                <v-label>{{getAveragePrice(item)}}</v-label>
                             </v-flex>
                             <v-flex justify-center align-center class="comparisonItem comparisonItemBig even values">
                                 <v-img max-width="80px" :src="getNutritionImage(item)"></v-img>
@@ -70,20 +70,23 @@
                 this.dialog = false;
             },
             getNutritionImage(item) {
-                if (item.hasOwnProperty("nutrition_grade_fr")) {
-                    let nutritionScore = item.nutrition_grade_fr.toLowerCase();
+                if (item.hasOwnProperty("nutrition_grade") && item.nutrition_grade !== "" && item.nutrition_grade !== "x") {
+                    let nutritionScore = item.nutrition_grade.toLowerCase();
                     return require('../assets/n' + nutritionScore + '.png');
                 } else {
                     return require('../assets/unknown.png');
                 }
             },
             getOurScoreImage(item) {
-                if (item.hasOwnProperty("our_score")) {
-                    let score = item.our_score.toLowerCase();
+                if (item.hasOwnProperty("score") && item.score !== "" && item.score !== "x") {
+                    let score = item.score.toLowerCase();
                     return require('../assets/n' + score + '.png');
                 } else {
                     return require('../assets/unknown.png');
                 }
+            },
+            getAveragePrice(item) {
+                return (item.avgPrice === 0) ? "Inconnu" : item.avgPrice + "€";
             }
         }
     };
