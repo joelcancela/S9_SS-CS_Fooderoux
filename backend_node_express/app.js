@@ -76,38 +76,6 @@ app.get('/api/foods', foods.getFoods);
 app.get('/api/foods/:itemId', foods.getFoodById);
 
 /**
- * Given an :itemId, fetch a collection of <Pricing> objects
- *
- * @author: Nikita ROUSSEAU
- *
- * Request: [GET] http://localhost:3000/api/foods/0000000027205/pricing
- * Response:
- * {
- *    "item": {
- *      "_id": "0000000027205",
- *      "pricing": [(...)]
- *    }
- * }
- */
-app.get('/api/foods/:itemId/pricing', foods.getPriceEvolutionForFood);
-
-/**
- * Given an :itemId, fetch the average price
- *
- * @author: Nikita ROUSSEAU
- *
- * Request: [GET] http://localhost:3000/api/foods/0000000027205/price
- * Response:
- * {
- *    "item": {
- *      "_id": "0000000027205",
- *      "price": 10.5
- *    }
- * }
- */
-app.get('/api/foods/:itemId/price', foods.getAvgPriceForFood);
-
-/**
  * Add a new Pricing information attached to :itemId
  * A Pricing object has a "price", "date" and "store" attribute
  * An item has a collection Pricing
@@ -138,13 +106,10 @@ app.get('/api/foods/:itemId/price', foods.getAvgPriceForFood);
  * }
  */
 app.post('/api/foods/:itemId/pricing', foods.postPriceForFood);
-app.get('/api/foods/:itemId/score', foods.getScoreForFood)
-app.get('/api/foods/:itemId/imageLink', foods.getImgLinkForFood)
 
 /**************************** Recipe ****************************/
-
-app.get('/api/recipes', recipes.getAllRecipes)
-app.get('/api/recipes/:recipeId', recipes.getRecipeById)
-app.post('/api/recipes/parse', recipes.parseRecipe)
-app.post('/api/recipes', recipes.postRecipe)
-app.post('/api/recipes/:recipeId/comment', recipes.postCommentOnRecipe)
+app.get('/api/recipes', recipes.getAllRecipes);
+app.get('/api/recipes/:recipeId', recipes.getRecipeById);
+app.post('/api/recipes/parse', recipes.parseRecipe);
+app.post('/api/recipes', recipes.postRecipe);
+app.post('/api/recipes/:recipeId/comment', recipes.postCommentOnRecipe);
