@@ -37,7 +37,7 @@ function getFoods(req, res, next) {
         if (req.query.nutrition_score == "") {
             criterias.push({ $or: [{ nutrition_grade_fr: reg, nutrition_grades: reg }] });
         } else {
-            let grade = req.query.nutrition_score.charAt(0);
+            let grade = req.query.nutrition_score.toLowerCase().charAt(0);
             let grade_array = ['x', 'e', 'd', 'c', 'b', 'a'];
             if (grade_array.includes(grade) && grade_array.indexOf(grade) != -1) {
                 grade_array.splice(0, grade_array.indexOf(grade));
