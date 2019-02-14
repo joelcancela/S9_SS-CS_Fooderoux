@@ -39,6 +39,9 @@ import * as utils from "../utils";
 import * as client from "../network/client";
 export default {
   name: "MapView",
+  props: {
+    region: String
+  },
   data: function() {
     return {
       center: {
@@ -61,23 +64,15 @@ export default {
     );
   },
   methods: {
-    getStores(lat, lng) {
-      client.getIsoFromPosition(lat, lng)
-        .then(response => {
-          if (response.ok) return response.json();
-          else
-            throw new Error("HTTP response status not code 200 as expected.");
-        })
-        .then(iso => {
-            client.getStoresFromRegion(iso)
-              .then(response => {
-                  if (response.ok) return response.json();
-                  else throw new Error("HTTP response status not code 200 as expected.");
-              })
-              .then((storesJson)=>{
-                this.stores = storesJson.stores;
-            });
-        });
+    getStores() {
+      client.getStoresFromRegion(this.region)
+         .then(response => {
+             if (response.ok) return response.json();
+             else throw new Error("HTTP response status not code 200 as expected.");
+         })
+         .then((storesJson)=>{
+           this.stores = storesJson.stores;
+         });
     },
     parsePosition(position) {
       let lat = parseInt(position.lat);
