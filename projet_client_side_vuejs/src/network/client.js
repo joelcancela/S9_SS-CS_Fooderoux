@@ -29,8 +29,8 @@ export function getPriceFromItemID(itemID) {
     return get(URL + "/api/foods/" + itemID + "/price");
 }
 
-export function getRecipes() {
-    return get(URL + "/api/recipes/");
+export function getRecipes(page) {
+    return get(URL + "/api/recipes?limit=8&page=" + page);
 }
 
 export function createRecipe(name, ingredients) {
@@ -43,6 +43,10 @@ export function getRecipesByName(ingredient) {
 
 export function postPrice(itemID, price, store) {
     return post(URL + "/api/foods/" + itemID + "/price", {price: price, store: store});
+}
+
+export function getRecipesNumber() {
+    return get(URL + "/api/recipes/stats");
 }
 
 function get(url) {
