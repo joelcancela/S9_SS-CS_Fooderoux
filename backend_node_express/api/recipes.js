@@ -5,6 +5,12 @@ const assert = require('assert'); // Assertions
 const ObjectId = require('mongodb').ObjectId; //Used to make Mongo recognize ids (sometimes it doesn't :( )
 
 
+function getRecipeCount(req, res) {
+    recipeDb().stats(function (err, stats) {
+        res.send({ items: stats.count });
+    });
+}
+
 function getAllRecipes(req, res) {
     let pagesize = 50;
     let n = 1;
@@ -111,6 +117,7 @@ function postCommentOnRecipe(req, res) {
     });
 }
 
+exports.getRecipeCount = getRecipeCount;
 exports.getAllRecipes = getAllRecipes;
 exports.getRecipeById = getRecipeById;
 exports.parseRecipe = parseRecipe;

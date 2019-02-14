@@ -108,6 +108,7 @@ app.get('/api/foods/:itemId', foods.getFoodById);
 app.post('/api/foods/:itemId/pricing', foods.postPriceForFood);
 
 /**************************** Recipe ****************************/
+app.get('/api/recipes/stats', recipes.getRecipeCount);
 app.get('/api/recipes', recipes.getAllRecipes);
 app.get('/api/recipes/:recipeId', recipes.getRecipeById);
 app.post('/api/recipes/parse', recipes.parseRecipe);
