@@ -207,7 +207,10 @@ function postPriceForFood(req, res) {
         "name": "",
         "location": {
             "type": "Point",
-            "coordinates": [-73.856077, 40.848447]
+            "coordinates": {
+                "lat": -73.856077,
+                "lng": 40.848447
+            }
         },
         "country_code": "us"
     };
