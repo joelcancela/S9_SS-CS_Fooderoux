@@ -1,4 +1,5 @@
 /**************************** Food API (/foods) ****************************/
+const util = require('./utils');
 const foodDb = require('../mongodb/mongo').getFoodDb; // Connection to food collection
 const uuidv4 = require('uuid/v4'); // UUID generator
 const hash = require('object-hash');
@@ -200,7 +201,7 @@ function getFoodById(req, res) {
     }
 }
 
-function postPriceForFood(req, res) {
+async function postPriceForFood(req, res) {
     let itemId = - 1;
     let price = -1;
     let store = {
@@ -229,22 +230,46 @@ function postPriceForFood(req, res) {
         return;
     }
     price = req.body.price;
-    // store
-    if (req.body["store"] == null || req.body["store"]["name"] == null) {
+    // store name
+    if (req.body["store"] == null || req.body["store"]["name"] == null || req.body["store"]["name"].length < 3) {
         res.status(400).send("Missing store object/name.");
         return;
     }
 
-    /* Store object definition */
+    /* ============================================================================================================== */
+    // Store object definition */
     // Name
     store.name = req.body["store"]["name"];
     // GPS Location
-
+    try {
+        store.location.coordinates = await util.doGPSCoordinatesFromLocation(store.name);
+    }
+    catch (e) {
+        console.log(e);
+        res.status(500).send()
+    }
+    if (!store.location.coordinates.hasOwnProperty("lng")) {
+        res.status(400).send("Unable to geocode the location for the given store name.");
+    }
     // Region
-
+    let region;
+    try {
+        region = await util.doCityFromGPSCoordinates(
+            store.location.coordinates.lng,
+            store.location.coordinates.lat
+        );
+    }
+    catch (e) {
+        console.log(e);
+        res.status(500).send()
+    }
+    if (!region.hasOwnProperty("country_code")) {
+        res.status(400).send("Unable to geocode the region for the given store name.");
+    }
+    store.country_code = region.country_code;
     // Id
-    store['storeId'] = hash(store); // Generate unique Id for the given store
-    /* End: Store Object*/
+    store['storeId'] = String(hash(store)).trim(); // Generate unique Id for the given store
+    /* ============================================================================================================== */
 
     foodDb().find({ _id: itemId }).toArray(function (err, result_collection) {
         assert.equal(err, null);
@@ -262,7 +287,7 @@ function postPriceForFood(req, res) {
 
         // Update foodDb()
         pricing_collection.push({
-            "_uuid": uuidv4(),
+            "_uuid": String(uuidv4()).trim(),
             "price": price,
             "currency": "euro",
             "date": Date.now(),

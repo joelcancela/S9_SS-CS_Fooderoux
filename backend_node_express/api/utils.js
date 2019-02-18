@@ -122,10 +122,48 @@ function doGPSCoordinatesFromLocation(location) {
 
 /* ENHANCED GEOCODING BY GPS */
 
-function getCityFromGPSCoordinates(req, res) {
+function doCityFromGPSCoordinates(lon, lat) {
+    if (lon == null) {
+        return null;
+    }
+    if (lat == null) {
+        return null;
+    }
+    return new Promise (resolve => {
+        request.get(
+            {
+                url: "https://nominatim.openstreetmap.org/reverse",
+                headers: {
+                    'User-Agent': 'NPM/Request S9_WEBSRV',
+                    'Referer': 'about:blank'
+                },
+                qs: {
+                    "format": "json",
+                    "lon": String(lon),
+                    "lat": String(lat),
+                    "zoom": "10",
+                    "addressdetails": "1"
+                },
+                json: true
+            },
+            (e, r, body) => {
+                if (e) {
+                    throw new Error(String(e));
+                }
+                if (body.address) {
+                    resolve(body.address);
+                }
+                return resolve({});
+            }
+        );
+    })
+}
+
+async function getCityFromGPSCoordinates(req, res) {
 
     let lon;
     let lat;
+    let info;
     if (req.query.lon != null) {
         lon = parseFloat(req.query.lon);
         if (lon < -180.0 || lon > 180.0) {
@@ -141,33 +179,26 @@ function getCityFromGPSCoordinates(req, res) {
         }
     }
 
-    request.get(
-        {
-            url: "https://nominatim.openstreetmap.org/reverse",
-            headers: {
-                'User-Agent': 'NPM/Request S9_WEBSRV',
-                'Referer': 'about:blank'
-            },
-            qs: {
-                "format": "json",
-                "lon": String(lon),
-                "lat": String(lat),
-                "zoom": "10",
-                "addressdetails": "1"
-            },
-            json: true
-        },
-        (e, r, body) => {
-            if (e) {
-                console.log(e);
-                res.status(400).send(e);
-                return;
-            }
-            res.send(body.address);
-        });
+    try {
+        info = await doCityFromGPSCoordinates(lon, lat);
+    }
+    catch(e) {
+        console.log(e);
+        // error
+        res.status(400).send(e);
+    }
+
+    if (info != null) {
+        res.send(info);
+    } else {
+        res.status(404).send();
+    }
 }
 
 exports.home = home;
 exports.getCityFromGPSCoordinates = getCityFromGPSCoordinates;
 exports.getStoresInRegion = getStoresInRegion;
 exports.getGPSCoordinatesFromLocation = getGPSCoordinatesFromLocation;
+
+exports.doGPSCoordinatesFromLocation = doGPSCoordinatesFromLocation; // Required while posting new price
+exports.doCityFromGPSCoordinates = doCityFromGPSCoordinates; // Required while posting new price
