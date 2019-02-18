@@ -36,18 +36,6 @@ app.listen(port, function () {
  */
 /**************************** Utils ****************************/
 app.get('/', utils.home);
-
-/**
- * Given a <country_code> (ISO), fetch all known stores
- *
- * @author: Nikita ROUSSEAU
- *
- * Request: [GET] http://localhost:3000/api/stores/search?region=fr
- * Response:
- * {
-    "stores": [{}, {}, ...]
- * }
- */
 app.get('/api/stores/search', utils.getStoresInRegion);
 
 /**************************** Food ****************************/
