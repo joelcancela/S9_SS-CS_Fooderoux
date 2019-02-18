@@ -35,7 +35,7 @@
                 <div slot="header">{{recipe.name}}</div>
                 <v-layout class="ingredients">
                     <v-flex class="ingredients" xs1>
-                        <v-icon color="#00cc00" style="margin-left: 35px">comments</v-icon>
+                        <v-icon color="#00cc00" style="margin-left: 35px" @click="displayDialog(recipe)">comments</v-icon>
                     </v-flex>
                     <v-flex class="ingredients" xs10>
                         <v-chip @click="searchIngredient(ingredient)" class="ingredient"
@@ -48,11 +48,41 @@
                 </v-layout>
             </v-expansion-panel-content>
         </v-expansion-panel>
+
         <v-flex class="pagination">
             <v-btn :disabled="page === 1" @click="previousPage" class="pagButton"> <i aria-hidden="true" class="v-icon material-icons theme--light">chevron_left</i>  </v-btn>
             <v-btn color="#404040" class="pagButton white--text">{{page}}</v-btn>
             <v-btn @click="nextPage" class="pagButton"> <i aria-hidden="true" class="v-icon material-icons theme--light">chevron_right</i> </v-btn>
         </v-flex>
+
+        <v-dialog v-model="dialog" width="500">
+            <v-card>
+                <v-card-title class="headline grey lighten-2" primary-title>
+                    Commentaires
+                </v-card-title>
+
+                <v-card-text>
+                    <v-layout v-for="comment in selectedRecipe.comments" style="margin-bottom: 20px">
+                        <v-label>
+                            {{comment.username}} : {{comment.text}}
+                        </v-label>
+                    </v-layout>
+
+
+                    <v-textarea label="Avis" color="#00cc00" v-model="comment" solo clearable hide-details></v-textarea>
+                    <v-btn class="white--text" color="#00cc00" @click="sendComment">Ajouter</v-btn>
+                </v-card-text>
+
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn color="#404040" flat @click="dialog = false">
+                        Fermer
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
     </v-layout>
 </template>
 
@@ -71,7 +101,10 @@
                 creationError: false,
                 page: 1,
                 totalPages: 0,
-                price: -1
+                price: -1,
+                dialog: false,
+                selectedRecipe: {},
+                comment: ""
             };
         },
         props: {
@@ -124,7 +157,6 @@
                 this.page = page ? page : 1;
                 let newDisplayedRecipes = [];
                 if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient && this.filters.ingredient !== "") {
-                    console.log("hey");
                     client.getRecipesByName(this.filters.ingredient, this.page)
                         .then((recipes) => {
                             if (recipes.ok) return recipes.json();
@@ -174,13 +206,22 @@
                         else
                             throw new Error("HTTP response status not code 200 as expected.");
                     }).then(recipesJson => {
-                    this.recipes = recipesJson.filter((recipe)=>recipe.name);
-                    this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
+                    this.recipes = recipesJson.filter((recipe) => recipe.name);
+                    this.displayedRecipes = recipesJson.filter((recipe) => recipe.name);
                 });
+            },
+            displayDialog(recipe) {
+                this.selectedRecipe = recipe;
+                this.dialog = true;
+            },
+            sendComment() {
+                this.selectedRecipe.comments.push({username: "Moi", text: this.comment});
+                client.postComment(this.selectedRecipe._id, "Moi", this.comment);
+                this.comment = "";
             }
         },
         mounted() {
-           this.getAllRecipes()
+            this.getAllRecipes()
         },
         watch: {
             filters: function() {

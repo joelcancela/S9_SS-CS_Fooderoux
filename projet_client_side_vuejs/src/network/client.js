@@ -53,6 +53,10 @@ export function getRecipePrice(recipeID) {
     return get(URL + "/api/recipes/" + recipeID + "/price");
 }
 
+export function postComment(recipeID, username, text) {
+    return post(URL + "/api/recipes/" + recipeID + "/comment",{comment: {username: username, text: text}});
+}
+
 function get(url) {
     return fetch(url, {
             method: 'get',
