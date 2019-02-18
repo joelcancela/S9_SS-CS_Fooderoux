@@ -34,7 +34,7 @@ export function getRecipes(page) {
 }
 
 export function createRecipe(name, ingredients) {
-    //post(URL + "/api/recipes",{"name":name, "ingredients": ingredients});
+    return post(URL + "/api/recipes",{"name": name, "ingredients": ingredients});
 }
 
 export function getRecipesByName(ingredient) {
@@ -60,7 +60,7 @@ function post(url, body) {
     return fetch(url, {
             method: 'post',
             headers: { "Content-Type": "application/json; charset=utf-8" },
-            body: body
+            body: JSON.stringify(body)
         });
 }
 
