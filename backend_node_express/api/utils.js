@@ -13,7 +13,7 @@ const assert = require('assert'); // Assertions
  * @apiName home
  * @apiVersion 1.0.0
  * @apiSuccess {String} result A nice message
- * @apiSuccessExample {json} On success
+ * @apiSuccessExample {String} On success
  * Server online
  */
 function home(req, res) {
@@ -23,17 +23,30 @@ function home(req, res) {
 /**
  * @category   Fooderoux
  * @apiGroup   Util
- * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @author     Nikita ROUSSEAU <nikita.rousseau@etu.unice.fr>
  * @version    Release: @1.0.0@
  *
- * @api {get} /stores/search Get stores in region
+ * @api {get} /api/stores/search Get stores in a selected region
  * @apiName getStoresInRegion
  * @apiVersion 1.0.0
  * @apiParam {String} region ISO country code (i.e. us)
  * @apiSuccess {String} result a JSON containing a stores key with an array
  * @apiSuccessExample {json} On success
  * {
-    "stores": [{}, {}, ...]
+ *     "stores": [
+ *         {
+ *             "_uuid": "99ef207806547c6c203339be3b096787595f8e5d",
+ *             "name": "Carrefour Antibes",
+ *             "location": {
+ *                 "type": "Point",
+ *                 "coordinates": {
+ *                     "lat": "43.60356775",
+ *                     "lng": "7.08884616418128"
+ *                 }
+ *             },
+ *             "country_code": "fr"
+ *         }
+ *     ]
  * }
  */
 function getStoresInRegion(req, res) {
@@ -83,21 +96,14 @@ function getStoresInRegion(req, res) {
     });
 }
 
-/**
- * @category   Fooderoux
- * @apiGroup   Util
- * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
- * @version    Release: @1.0.0@
- *
- * @api {get} /api/regions/resolve Find city with GPS coordinates
- * @apiName getCityFromGPSCoordinates
- * @apiVersion 1.0.0
- * @apiParam {String} lat float latitude value between -90 and 90 (inclusive)
- * @apiParam {String} long float latitude value between -180 and 180 (inclusive)
- * @apiSuccess {String} result A JSON describing the city
- * @apiSuccessExample {json} On success
+
 /* LOCATION GEOCODING */
 
+/**
+ * Given a String Location, resolve to GPS coordinates
+ * @param location
+ * @returns object
+ */
 function doGPSCoordinatesFromLocation(location) {
     if (location == null) {
         return null;
@@ -131,32 +137,6 @@ function doGPSCoordinatesFromLocation(location) {
             }
         );
     })
-}
-
-async function getGPSCoordinatesFromLocation(req, res) {
-
-    let location;
-    let coordinates;
-    if (req.query.name == null) {
-        res.status(400).send("Missing location name.");
-        return;
-    }
-    location = req.query.name;
-
-    try {
-        coordinates = await doGPSCoordinatesFromLocation(location);
-    }
-    catch(e) {
-        console.log(e);
-        // error
-        res.status(400).send(e);
-    }
-
-    if (coordinates != null && coordinates.lat && coordinates.lng) {
-        res.send(coordinates);
-    } else {
-        res.status(404).send();
-    }
 }
 
 /* ENHANCED GEOCODING BY GPS */
@@ -216,43 +196,7 @@ function doCityFromGPSCoordinates(lon, lat) {
     })
 }
 
-async function getCityFromGPSCoordinates(req, res) {
-
-    let lon;
-    let lat;
-    let info;
-    if (req.query.lon != null) {
-        lon = parseFloat(req.query.lon);
-        if (lon < -180.0 || lon > 180.0) {
-            res.status(400).send("Valid longitude values are between -180 and 180, both inclusive.");
-            return;
-        }
-    }
-    if (req.query.lat != null) {
-        lat = parseFloat(req.query.lat);
-        if (lat < -90.0 || lat > 90.0) {
-            res.status(400).send("Valid latitude values are between -90 and 90 (both inclusive).");
-            return;
-        }
-    }
-
-    try {
-        info = await doCityFromGPSCoordinates(lon, lat);
-    }
-    catch(e) {
-        console.log(e);
-        // error
-        res.status(400).send(e);
-    }
-
-    if (info != null) {
-        res.send(info);
-    } else {
-        res.status(404).send();
-    }
-}
-
 exports.home = home;
 exports.getStoresInRegion = getStoresInRegion;
-exports.doGPSCoordinatesFromLocation = doGPSCoordinatesFromLocation; // Required while posting new price
-exports.doCityFromGPSCoordinates = doCityFromGPSCoordinates; // Required while posting new price
+exports.doGPSCoordinatesFromLocation = doGPSCoordinatesFromLocation;
+exports.doCityFromGPSCoordinates = doCityFromGPSCoordinates;

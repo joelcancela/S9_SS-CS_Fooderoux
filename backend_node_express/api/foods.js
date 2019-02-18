@@ -273,37 +273,45 @@ function getFoodById(req, res) {
 /**
  * @category   Fooderoux
  * @apiGroup   Food
- * @author     Nikita ROUSSEAU
+ * @author     Nikita ROUSSEAU <nikita.rousseau@etu.unice.fr>
  * @version    Release: @1.0.0@
  *
  * @api {post} /api/foods/:itemId/pricing Add pricing to an item
  * @apiName postPriceForFood
  * @apiVersion 1.0.0
- * @apiParam {String} itemId     Mandatory ID of a given food item.
- * @apiSuccess {String} result Server online
+ * @apiParamExample {json} Request-Example:
+ * {
+ *   "price": 20,
+ *   "store": {
+ *     "name": "Carrefour Antibes"
+ *   }
+ * }
+ * @apiSuccess {String} result Pricing information
  * @apiSuccessExample {json} On success
  * {
- *  "price": 11,
- *  "store": {
- *    "storeId": 42,
- *    "name": "TotoShop42",
- *    "location": {
- *      "type": "Point",
- *      "coordinates": {
- *        "lat": -73.856077,
- *        "lng": 40.848447
- *      }
- *    },
- *    "country_code": "us"
- *  }
- * }
- *
- * Response:
- * {
- *    "item": {
- *      "_id": "0000000027205",
- *      "pricing": [(...)]
- *    }
+ *     "item": {
+ *         "_id": "00000",
+ *         "pricing": [
+ *             {
+ *                 "_uuid": "ce0199b1-13b0-45f3-a9c1-454072e432a8",
+ *                 "price": 20,
+ *                 "currency": "euro",
+ *                 "date": 1550503498361,
+ *                 "store": {
+ *                     "_uuid": "99ef207806547c6c203339be3b096787595f8e5d",
+ *                     "name": "Carrefour Antibes",
+ *                     "location": {
+ *                         "type": "Point",
+ *                         "coordinates": {
+ *                             "lat": "43.60356775",
+ *                             "lng": "7.08884616418128"
+ *                         }
+ *                     },
+ *                     "country_code": "fr"
+ *                 }
+ *             }
+ *         ]
+ *     }
  * }
  */
 async function postPriceForFood(req, res) {
