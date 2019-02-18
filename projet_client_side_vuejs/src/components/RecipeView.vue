@@ -14,20 +14,20 @@
                             multiple
                             solo>
                         </v-text-field>
-                        <v-btn color="primary" :disabled="newIngredient === ''" @click="addIngredient">Ajouter l'ingrédient</v-btn>
+                        <v-btn class="white--text" color="#00cc00" :disabled="newIngredient === ''" @click="addIngredient">Ajouter l'ingrédient</v-btn>
                     </v-flex>
                     <v-flex>
-                        <v-chip color="green" outline @input="removeIngredient(index)" close v-for="(ingredient, index) in newIngredients" :key="index">{{ingredient}}</v-chip>
+                        <v-chip color="#00cc00" outline @input="removeIngredient(index)" close v-for="(ingredient, index) in newIngredients" :key="index">{{ingredient}}</v-chip>
                     </v-flex>
                     <v-dialog v-model="creationError" max-width="500px">
                         <v-card>
                             <v-card-actions class="dialogContent">
                                 <div class="errorDialog">Vous devez ajouter le nom et au moins un ingrédient à la recette</div>
-                                <v-btn color="primary" flat @click="creationError=false">OK</v-btn>
+                                <v-btn color="success" flat @click="creationError=false">OK</v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-dialog>
-                    <v-btn @click="createRecipe()" class="creationButton">Créer</v-btn>
+                    <v-btn color="#00cc00" @click="createRecipe()" class="white--text creationButton">Créer</v-btn>
                 </v-flex>
             </v-expansion-panel-content>
             <v-expansion-panel-content
@@ -48,6 +48,8 @@
                 :total-visible="5"
                 v-on:next="nextPage"
                 v-on:previous="previousPage"
+                color="#404040"
+                @input="getNextOrPreviousRecipes"
         ></v-pagination>
     </v-layout>
 </template>
@@ -73,10 +75,21 @@
             filters: Object
         },
         methods: {
+            getNextOrPreviousRecipes() {
+                client.getRecipes(this.page)
+                    .then(response => {
+                        if (response.ok) return response.json();
+                        else
+                            throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then(recipesJson => {
+                        this.recipes = recipesJson.filter((recipe)=>recipe.name);
+                        this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
+                    });
+            },
             nextPage() {
-                console.log(this.page);
-                if(this.page < this.totalPages) {
-                    client.getRecipes(this.page + 1)
+                if(this.page <= this.totalPages) {
+                    client.getRecipes(this.page)
                         .then(response => {
                             if (response.ok) return response.json();
                             else
@@ -89,8 +102,8 @@
                 }
             },
             previousPage() {
-                if(this.page > 1) {
-                    client.getRecipes(this.page - 1)
+                if(this.page >= 1) {
+                    client.getRecipes(this.page)
                         .then(response => {
                             if (response.ok) return response.json();
                             else
@@ -114,7 +127,18 @@
                     this.creationError = true;
                 }
                 else {
-                    client.createRecipe(this.recipeName, this.newIngredients.slice(0, this.newIngredients.length));
+                    client.createRecipe(this.recipeName, this.newIngredients.slice(0, this.newIngredients.length)).then(()=>{
+                        client.getRecipes(this.page)
+                            .then(response => {
+                                if (response.ok) return response.json();
+                                else
+                                    throw new Error("HTTP response status not code 200 as expected.");
+                            })
+                            .then(recipesJson => {
+                                this.recipes = recipesJson.filter((recipe)=>recipe.name);
+                                this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
+                            });
+                    });
                     this.recipeName = "";
                     this.newIngredients = [];
                 }
