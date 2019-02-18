@@ -37,6 +37,19 @@ npm start
 # Server listens at port 3000 or the one specified by the environnement variable: "PORT" (like Heroku does)
 ```
 
+### Documentation
+
+#### Generation
+
+```bash
+npm install apidoc -g # Install apidoc
+./generate_doc.sh # Launches command to generate documentation
+```
+
+#### Consult
+
+doc/index.html
+
 ## Authors
 
 * BONNY Pierre

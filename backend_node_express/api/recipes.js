@@ -4,13 +4,38 @@ const foodDb = require('../mongodb/mongo').getFoodDb; // Connection to food coll
 const assert = require('assert'); // Assertions
 const ObjectId = require('mongodb').ObjectId; //Used to make Mongo recognize ids (sometimes it doesn't :( )
 
-
+/**
+ * @category   Fooderoux
+ * @apiGroup   Recipe
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} [firstname]  Optional Firstname of the User.
+ * @apiSuccess {String} result Server online
+ */
 function getRecipeCount(req, res) {
     recipeDb().stats(function (err, stats) {
         res.send({ items: stats.count });
     });
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Recipe
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} [firstname]  Optional Firstname of the User.
+ * @apiSuccess {String} result Server online
+ */
 function getAllRecipes(req, res) {
     let pagesize = 50;
     let n = 1;
@@ -44,7 +69,19 @@ function getAllRecipes(req, res) {
     });
 }
 
-
+/**
+ * @category   Fooderoux
+ * @apiGroup   Recipe
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} [firstname]  Optional Firstname of the User.
+ * @apiSuccess {String} result Server online
+ */
 function getRecipeById(req, res) {
     let id = req.params.recipeId;
     recipeDb().find(ObjectId(id)).toArray(function (err, docs) {
@@ -57,6 +94,19 @@ function getRecipeById(req, res) {
     });
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Recipe
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} [firstname]  Optional Firstname of the User.
+ * @apiSuccess {String} result Server online
+ */
 function getRecipePrice(req, res) {
     let id = req.params.recipeId;
     let price = [];
@@ -66,7 +116,7 @@ function getRecipePrice(req, res) {
             res.status(400).send(err);
         } else {
             let item = docs[0];
-            if (item.ingredients != undefined && item.ingredients.length > 0) {
+            if (item.ingredients != undefined && Array.isArray(item.ingedients) && item.ingredients.length > 0) {
                 item.ingredients.forEach(function (element) {
                     let reg = new RegExp(".*" + element + ".*", "i");
                     let searchObject = { $or: [{ product_name: reg }, { product_name_en: reg }, { product_name_fr: reg }] };
@@ -104,6 +154,19 @@ function getRecipePrice(req, res) {
     });
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Recipe
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} [firstname]  Optional Firstname of the User.
+ * @apiSuccess {String} result Server online
+ */
 function parseRecipe(req, res) {
     let result = {}; // JSON answer
     let data = req.body;
@@ -135,6 +198,19 @@ function parseRecipe(req, res) {
     })
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Recipe
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} [firstname]  Optional Firstname of the User.
+ * @apiSuccess {String} result Server online
+ */
 function postRecipe(req, res) {
     let data = req.body;
     try {
@@ -145,6 +221,19 @@ function postRecipe(req, res) {
     }
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Recipe
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiSuccess {String} result Server online
+ */
 function postCommentOnRecipe(req, res) {
     let data = req.body.comment;
     let id = req.params.recipeId;

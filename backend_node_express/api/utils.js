@@ -2,10 +2,39 @@
 const request = require('request'); // HTTP client
 const foodDb = require('../mongodb/mongo').getFoodDb; // Connection to food collection
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Util
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} / Server heartbeat
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiSuccess {String} result A nice message
+ * @apiSuccessExample {json} On success
+ * Server online
+ */
 function home(req, res) {
     res.send("Server online");
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Util
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /stores/search Get stores in region
+ * @apiName getStoresInRegion
+ * @apiVersion 1.0.0
+ * @apiParam {String} region ISO country code (i.e. us)
+ * @apiSuccess {String} result a JSON containing a stores key with an array
+ * @apiSuccessExample {json} On success
+ * {
+    "stores": [{}, {}, ...]
+ * }
+ */
 function getStoresInRegion(req, res) {
     let country_code;
     let known_stores = [];
@@ -57,8 +86,30 @@ function getStoresInRegion(req, res) {
     });
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Util
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /api/regions/resolve Find city with GPS coordinates
+ * @apiName getCityFromGPSCoordinates
+ * @apiVersion 1.0.0
+ * @apiParam {String} lat float latitude value between -90 and 90 (inclusive)
+ * @apiParam {String} long float latitude value between -180 and 180 (inclusive)
+ * @apiSuccess {String} result A JSON describing the city
+ * @apiSuccessExample {json} On success
+ * {
+ *   "island": "Hunter Island",
+ *   "county": "Bronx County",
+ *   "city": "NYC",
+ *   "state": "New York",
+ *   "postcode": "10805",
+ *   "country": "USA",
+ *   "country_code": "us"
+ * }
+ */
 function getCityFromGPSCoordinates(req, res) {
-
     let lon;
     let lat;
     if (req.query.lon != null) {

@@ -4,12 +4,53 @@ const uuidv4 = require('uuid/v4'); // UUID generator
 const assert = require('assert'); // Assertions
 const Food = require('../model/food');
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Food
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /api/stats Get food items count in database
+ * @apiName getFoodCount
+ * @apiVersion 1.0.0
+ * @apiSuccess {String} result A JSON containing the number of food item in database
+ * @apiSuccessExample {json} On success
+ * { items: 28522 }
+ */
 function getFoodCount(req, res) {
     foodDb().stats(function (err, stats) {
         res.send({ items: stats.count });
     });
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Food
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /api/foods Get specific food items according to criterias
+ * @apiName getFoods
+ * @apiVersion 1.0.0
+ * @apiSuccess {String} result A JSON array the food items with the requested criterias
+ * @apiSuccessExample {json} On success
+ * [{
+    "_id": "00",
+    "name": "Lignaform",
+    "serving_size": "5 barres de 40gr",
+    "nutrition_grade": "c",
+    "ingredients": [
+    ],
+    "nutriments": {...
+    },
+    "allergens": [],
+    "vitamins": [],
+    "pricing": [],
+    "imgUrl": "https://static.openfoodfacts.org/images/products/00/front_fr.14.full.jpg",
+    "score": "c",
+    "avgPrice": 0
+    }]
+ */
 function getFoods(req, res, next) {
     let pagesize = 50;
     let n = 1;
@@ -180,6 +221,34 @@ function getFoods(req, res, next) {
     });
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Food
+ * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
+ * @version    Release: @1.0.0@
+ *
+ * @api {get} /api/foods/:itemId Get a specific food item with its id
+ * @apiName home
+ * @apiVersion 1.0.0
+ * @apiParam {String} itemId  Mandatory ID of a given food item.
+ * @apiSuccess {String} result A JSON array containing the matching element (or not)
+ * @apiSuccessExample {json} On success
+ * [{
+    "_id": "0002200001221",
+    "name": "Big choco",
+    "serving_size": "250 g",
+    "nutrition_grade": "",
+    "ingredients": [],
+    "additives": [],
+    "nutriments": {},
+    "allergens": [],
+    "vitamins": [],
+    "pricing": [],
+    "imgUrl": "https://static.openfoodfacts.org/images/products/000/220/000/1221/front_fr.3.full.jpg",
+    "score": "b",
+    "avgPrice": 0
+   }]
+ */
 function getFoodById(req, res) {
     let response = [];
     if (req.params.itemId != null) {
@@ -199,6 +268,42 @@ function getFoodById(req, res) {
     }
 }
 
+/**
+ * @category   Fooderoux
+ * @apiGroup   Food
+ * @author     Nikita ROUSSEAU
+ * @version    Release: @1.0.0@
+ *
+ * @api {post} /api/foods/:itemId/pricing Add pricing to an item
+ * @apiName postPriceForFood
+ * @apiVersion 1.0.0
+ * @apiParam {String} itemId     Mandatory ID of a given food item.
+ * @apiSuccess {String} result Server online
+ * @apiSuccessExample {json} On success
+ * {
+ *  "price": 11,
+ *  "store": {
+ *    "storeId": 42,
+ *    "name": "TotoShop42",
+ *    "location": {
+ *      "type": "Point",
+ *      "coordinates": {
+ *        "lat": -73.856077,
+ *        "lng": 40.848447
+ *      }
+ *    },
+ *    "country_code": "us"
+ *  }
+ * }
+ *
+ * Response:
+ * {
+ *    "item": {
+ *      "_id": "0000000027205",
+ *      "pricing": [(...)]
+ *    }
+ * }
+ */
 function postPriceForFood(req, res) {
     let itemId = - 1;
     let price = -1;
