@@ -110,17 +110,13 @@
     "name": "postPriceForFood",
     "version": "1.0.0",
     "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "itemId",
-            "description": "<p>Mandatory ID of a given food item.</p>"
-          }
-        ]
-      }
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n  \"price\": 20,\n  \"store\": {\n    \"name\": \"Carrefour Antibes\"\n  }\n}",
+          "type": "json"
+        }
+      ]
     },
     "success": {
       "fields": {
@@ -130,14 +126,14 @@
             "type": "String",
             "optional": false,
             "field": "result",
-            "description": "<p>Server online</p>"
+            "description": "<p>Pricing information</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "On success",
-          "content": "{\n \"price\": 11,\n \"store\": {\n   \"storeId\": 42,\n   \"name\": \"TotoShop42\",\n   \"location\": {\n     \"type\": \"Point\",\n     \"coordinates\": {\n       \"lat\": -73.856077,\n       \"lng\": 40.848447\n     }\n   },\n   \"country_code\": \"us\"\n }\n}\n\nResponse:\n{\n   \"item\": {\n     \"_id\": \"0000000027205\",\n     \"pricing\": [(...)]\n   }\n}",
+          "content": "{\n    \"item\": {\n        \"_id\": \"00000\",\n        \"pricing\": [\n            {\n                \"_uuid\": \"ce0199b1-13b0-45f3-a9c1-454072e432a8\",\n                \"price\": 20,\n                \"currency\": \"euro\",\n                \"date\": 1550503498361,\n                \"store\": {\n                    \"_uuid\": \"99ef207806547c6c203339be3b096787595f8e5d\",\n                    \"name\": \"Carrefour Antibes\",\n                    \"location\": {\n                        \"type\": \"Point\",\n                        \"coordinates\": {\n                            \"lat\": \"43.60356775\",\n                            \"lng\": \"7.08884616418128\"\n                        }\n                    },\n                    \"country_code\": \"fr\"\n                }\n            }\n        ]\n    }\n}",
           "type": "json"
         }
       ]
@@ -397,58 +393,8 @@
   {
     "group": "Util",
     "type": "get",
-    "url": "/api/regions/resolve",
-    "title": "Find city with GPS coordinates",
-    "name": "getCityFromGPSCoordinates",
-    "version": "1.0.0",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lat",
-            "description": "<p>float latitude value between -90 and 90 (inclusive)</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "long",
-            "description": "<p>float latitude value between -180 and 180 (inclusive)</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "result",
-            "description": "<p>A JSON describing the city</p>"
-          }
-        ]
-      },
-      "examples": [
-        {
-          "title": "On success",
-          "content": "/* LOCATION GEOCODING",
-          "type": "json"
-        }
-      ]
-    },
-    "filename": "backend_node_express/api/utils.js",
-    "groupTitle": "Util"
-  },
-  {
-    "group": "Util",
-    "type": "get",
     "url": "/stores/search",
-    "title": "Get stores in region",
+    "title": "Get stores in a selected region",
     "name": "getStoresInRegion",
     "version": "1.0.0",
     "parameter": {
@@ -479,7 +425,7 @@
       "examples": [
         {
           "title": "On success",
-          "content": "{\n    \"stores\": [{}, {}, ...]\n}",
+          "content": "{\n    \"stores\": [\n        {\n            \"_uuid\": \"99ef207806547c6c203339be3b096787595f8e5d\",\n            \"name\": \"Carrefour Antibes\",\n            \"location\": {\n                \"type\": \"Point\",\n                \"coordinates\": {\n                    \"lat\": \"43.60356775\",\n                    \"lng\": \"7.08884616418128\"\n                }\n            },\n            \"country_code\": \"fr\"\n        }\n    ]\n}",
           "type": "json"
         }
       ]
