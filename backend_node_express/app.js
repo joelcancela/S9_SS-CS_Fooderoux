@@ -42,7 +42,7 @@ app.get('/', utils.home);
  *
  * @author: Nikita ROUSSEAU
  *
- * Request: [GET] http://localhost:3000/api/stores/search?region=us
+ * Request: [GET] http://localhost:3000/api/stores/search?region=fr
  * Response:
  * {
     "stores": [{}, {}, ...]

@@ -1,6 +1,7 @@
 /**************************** Utils API (/) ****************************/
 const request = require('request'); // HTTP client
 const foodDb = require('../mongodb/mongo').getFoodDb; // Connection to food collection
+const assert = require('assert'); // Assertions
 
 /**
  * @category   Fooderoux
