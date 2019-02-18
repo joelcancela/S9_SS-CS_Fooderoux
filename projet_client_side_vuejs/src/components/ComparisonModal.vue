@@ -86,7 +86,7 @@
                 }
             },
             getAveragePrice(item) {
-                return (item.avgPrice === 0) ? "Inconnu" : item.avgPrice + "€";
+                return (item.avgPrice === 0) ? "Inconnu" : parseInt(item.avgPrice) + "€";
             }
         }
     };

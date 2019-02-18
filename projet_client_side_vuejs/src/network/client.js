@@ -41,8 +41,8 @@ export function getRecipesByName(ingredient) {
     return get(URL + "/api/recipes?contains="+ingredient);
 }
 
-export function postPrice(itemID, price, store) {
-    return post(URL + "/api/foods/" + itemID + "/price", {price: price, store: store});
+export function postPrice(itemID, price, name) {
+    return post(URL + "/api/foods/" + itemID + "/pricing", {price: price, store: {name: name}});
 }
 
 export function getRecipesNumber() {

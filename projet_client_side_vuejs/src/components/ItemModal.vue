@@ -32,9 +32,9 @@
                     </v-flex>
 
                     <v-flex xs3 class="prices row">
-                        <v-card class="shopIcons" v-for="(price, index) in prices" :key="index">
+                        <v-card class="shopIcons" v-for="(price, index) in item.pricing" :key="index">
                             <v-flex xs8>
-                                <v-img width="60px" style="margin: 5px" :src="require('../assets/'+price.shop+'.png')"/>
+                                <v-img width="60px" style="margin: 5px" :src="getStoreImage(price)"/>
                             </v-flex>
                             <v-flex xs4>
                                 <v-label>
@@ -95,15 +95,6 @@ export default {
             storeSelected: "",
             towns: ["Antibes", "Nice", "Biot", "Montauroux"],
             townSelected: "",
-            prices: [
-                { shop: "carrefour", price: 5 },
-                { shop: "leclerc", price: 10 },
-                { shop: "leclerc", price: 10 },
-                { shop: "leclerc", price: 10 },
-                { shop: "leclerc", price: 10 },
-                { shop: "leclerc", price: 10 },
-                { shop: "leclerc", price: 10 }
-            ],
             price: ""
         };
     },
@@ -151,21 +142,29 @@ export default {
                 this.alert = true;
                 this.debouncedRemoveAlert();
             } else {
-                Client.postPrice(this.item.id, parseInt(this.price), this.storeSelected + " " + this.townSelected)
-                    .then(() => {
-                        this.alert = true;
+                Client.postPrice(this.item._id, parseInt(this.price), this.storeSelected + " " + this.townSelected)
+                    .then(response => {
+                        if (response.ok) return response.json();
+                        else throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then((response) => {
+                        this.alertSuccess = true;
                         this.debouncedRemoveSuccessAlert();
                         this.price = this.storeSelected = this.townSelected = "";
+                        this.item.pricing = response.item.pricing;
                     })
                     .catch(() => { this.price = this.storeSelected = this.townSelected = ""; });
             }
+        },
+        getStoreImage(price) {
+            return require('../assets/'+price.store.name.split(" ")[0].toLowerCase()+'.png');
         },
         removeAlert() {
             this.alert = false;
         },
         removeSuccessAlert() {
             this.alertSuccess = false;
-        }
+        },
     },
     created: function () {
         this.debouncedRemoveAlert = _.debounce(this.removeAlert, 3000);
