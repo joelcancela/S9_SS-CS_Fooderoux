@@ -1,13 +1,15 @@
 <template>
     <v-layout column class="filtersContainer">
         <v-flex xs3 class="titleContainer">
-            <v-img class="filterImg" width="20%" :src="require('../assets/filter.png')"/>
+            <v-img class="filterImg" width="30%" :src="require('../assets/filter.png')"/>
             <v-label>Filtrer les résultats</v-label>
         </v-flex>
 
         <v-flex xs9 class="criterionFilter">
-            <v-text-field class="selector" placeHolder="Par ingrédient" color="#00cc00" v-model="ingredient" solo></v-text-field>
-            <v-text-field type="number" class="selector" placeholder="Par nombre d'ingrédients" v-model="ingredientsNumberMax" solo></v-text-field>
+            <v-text-field class="selector" placeHolder="Ingrédient" color="#00cc00"
+                          v-model="ingredient" solo></v-text-field>
+            <v-text-field class="selector" placeholder="Nombre d'ingrédients" color="#00cc00" type="number"
+                          v-model="ingredientsNumberMax" solo></v-text-field>
         </v-flex>
     </v-layout>
 </template>
@@ -15,7 +17,7 @@
 <script>
     export default {
         name: "RecipeFilters",
-        data: function () {
+        data: function() {
             return {
                 ingredient: "",
                 ingredientsNumberMax: ""

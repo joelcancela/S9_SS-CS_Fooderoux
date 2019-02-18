@@ -22,7 +22,7 @@
                     <v-dialog v-model="creationError" max-width="500px">
                         <v-card>
                             <v-card-actions class="dialogContent">
-                                <div class="errorDialog">Vous devez ajouter le nom et au moins un ingrédient à la recette</div>
+                                <div class="errorDialog">Vous devez ajouter le nom et au moins un ingrédient à la recette.</div>
                                 <v-btn color="success" flat @click="creationError=false">OK</v-btn>
                             </v-card-actions>
                         </v-card>
@@ -30,18 +30,25 @@
                     <v-btn color="#00cc00" @click="createRecipe()" class="white--text creationButton">Créer</v-btn>
                 </v-flex>
             </v-expansion-panel-content>
-            <v-expansion-panel-content
-                    v-for="(recipe,index) in displayedRecipes"
-                    :key="index"
-            >
+
+            <v-expansion-panel-content v-for="(recipe,index) in displayedRecipes" :key="index" @input="getRecipePrice(recipe)">
                 <div slot="header">{{recipe.name}}</div>
-                <v-flex class="ingredients">
-                    <v-chip @click="searchIngredient(ingredient)" class="ingredient"
-                            v-for="(ingredient,index) in recipe.ingredients" :key="index">{{ingredient}}
-                    </v-chip>
-                </v-flex>
+                <v-layout class="ingredients">
+                    <v-flex class="ingredients" xs1>
+                        <v-icon color="#00cc00" style="margin-left: 35px">comments</v-icon>
+                    </v-flex>
+                    <v-flex class="ingredients" xs10>
+                        <v-chip @click="searchIngredient(ingredient)" class="ingredient"
+                                v-for="(ingredient,index) in recipe.ingredients" :key="index">{{ingredient}}
+                        </v-chip>
+                    </v-flex>
+                    <v-flex class="ingredients" xs1>
+                        <v-label>{{price}} €</v-label>
+                    </v-flex>
+                </v-layout>
             </v-expansion-panel-content>
         </v-expansion-panel>
+
         <v-pagination
                 v-model="page"
                 :length="totalPages"
@@ -68,7 +75,8 @@
                 displayedRecipes: [],
                 creationError: false,
                 page: 1,
-                totalPages: 0
+                totalPages: 0,
+                price: -1
             };
         },
         props: {
@@ -79,8 +87,7 @@
                 client.getRecipes(this.page)
                     .then(response => {
                         if (response.ok) return response.json();
-                        else
-                            throw new Error("HTTP response status not code 200 as expected.");
+                        else throw new Error("HTTP response status not code 200 as expected.");
                     })
                     .then(recipesJson => {
                         this.recipes = recipesJson.filter((recipe)=>recipe.name);
@@ -88,12 +95,11 @@
                     });
             },
             nextPage() {
-                if(this.page <= this.totalPages) {
+                if (this.page <= this.totalPages) {
                     client.getRecipes(this.page)
                         .then(response => {
                             if (response.ok) return response.json();
-                            else
-                                throw new Error("HTTP response status not code 200 as expected.");
+                            else throw new Error("HTTP response status not code 200 as expected.");
                         })
                         .then(recipesJson => {
                             this.recipes = recipesJson.filter((recipe)=>recipe.name);
@@ -102,12 +108,11 @@
                 }
             },
             previousPage() {
-                if(this.page >= 1) {
+                if (this.page >= 1) {
                     client.getRecipes(this.page)
                         .then(response => {
                             if (response.ok) return response.json();
-                            else
-                                throw new Error("HTTP response status not code 200 as expected.");
+                            else throw new Error("HTTP response status not code 200 as expected.");
                         })
                         .then(recipesJson => {
                             this.recipes = recipesJson.filter((recipe)=>recipe.name);
@@ -131,8 +136,7 @@
                         client.getRecipes(this.page)
                             .then(response => {
                                 if (response.ok) return response.json();
-                                else
-                                    throw new Error("HTTP response status not code 200 as expected.");
+                                else throw new Error("HTTP response status not code 200 as expected.");
                             })
                             .then(recipesJson => {
                                 this.recipes = recipesJson.filter((recipe)=>recipe.name);
@@ -152,52 +156,57 @@
                     client.getRecipesByName(this.filters.ingredient)
                         .then((recipes) => {
                             if (recipes.ok) return recipes.json();
-                            else
-                                throw new Error("HTTP response status not code 200 as expected.");
+                            else throw new Error("HTTP response status not code 200 as expected.");
                         })
                         .then((recipesJson) => {
-                        newDisplayedRecipes = recipesJson;
-                        if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
-                            newDisplayedRecipes = newDisplayedRecipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax)
-                        }
-                        this.displayedRecipes = newDisplayedRecipes;
+                            newDisplayedRecipes = recipesJson;
+                            if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
+                                newDisplayedRecipes = newDisplayedRecipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax)
+                            }
+                            this.displayedRecipes = newDisplayedRecipes;
                     });
                 }
                 else if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
-                    newDisplayedRecipes = this.recipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax)
+                    newDisplayedRecipes = this.recipes.filter((recipe) => recipe.ingredients.length <= this.filters.ingredientsNumberMax);
                     this.displayedRecipes = newDisplayedRecipes;
                 }
                 else {
                     this.displayedRecipes = this.recipes;
                 }
+            },
+            getRecipePrice(recipe) {
+                client.getRecipePrice(recipe._id)
+                    .then((res) => {
+                        if (res.ok) return res.json();
+                        else throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then((response) => this.price = response.price);
             }
         },
         mounted() {
             client.getRecipesNumber()
                 .then(response => {
                     if (response.ok) return response.json();
-                    else
-                        throw new Error("HTTP response status not code 200 as expected.");
+                    else throw new Error("HTTP response status not code 200 as expected.");
                 })
                 .then(resJson => {
                     this.totalPages = Math.ceil(resJson.items / 8);
                 });
-            client.getRecipes(1)
+            client.getRecipes(this.page)
                 .then(response => {
                     if (response.ok) return response.json();
-                    else
-                        throw new Error("HTTP response status not code 200 as expected.");
+                    else throw new Error("HTTP response status not code 200 as expected.");
                 }).then(recipesJson => {
-                this.recipes = recipesJson.filter((recipe)=>recipe.name);
-                this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
-            });
+                    this.recipes = recipesJson.filter((recipe)=>recipe.name);
+                    this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
+                });
         },
         watch: {
-            filters: function () {
+            filters: function() {
                 this.debouncedGetAnswer();
             }
         },
-        created: function () {
+        created: function() {
             this.debouncedGetAnswer = _.debounce(this.filterRecipes, 800);
         }
     };

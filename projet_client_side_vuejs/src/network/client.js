@@ -49,6 +49,10 @@ export function getRecipesNumber() {
     return get(URL + "/api/recipes/stats");
 }
 
+export function getRecipePrice(recipeID) {
+    return get(URL + "/api/recipes/" + recipeID + "/price");
+}
+
 function get(url) {
     return fetch(url, {
             method: 'get',

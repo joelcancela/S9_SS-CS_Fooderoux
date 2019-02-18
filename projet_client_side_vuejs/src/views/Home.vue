@@ -51,7 +51,7 @@
                 v-on:recipe="changeToRecipe()"
               />
             </v-flex>
-            <v-flex xs8>
+            <v-flex xs8 class="mainItemsContainer">
               <component
                 :search="search"
                 :filters="filters"
@@ -59,7 +59,7 @@
                 v-bind:is="mainComponent"
               />
             </v-flex>
-            <v-flex xs2>
+            <v-flex xs2 class="filterContainer">
               <component
                 v-on:update_filters="updateFilters"
                 v-bind:is="filtersComponent"
@@ -156,7 +156,6 @@ export default {
   background-color: #404040;
   padding: 5px 3%;
 }
-
 .home {
   top: 0;
   right: 0;
@@ -184,5 +183,11 @@ export default {
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+}
+.mainItemsContainer {
+  background-color: #bfbfbf;
+}
+.filterContainer {
+  background-color: #fafafa;
 }
 </style>
