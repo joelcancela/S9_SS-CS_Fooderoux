@@ -48,16 +48,11 @@
                 </v-layout>
             </v-expansion-panel-content>
         </v-expansion-panel>
-
-        <v-pagination
-                v-model="page"
-                :length="totalPages"
-                :total-visible="5"
-                v-on:next="nextPage"
-                v-on:previous="previousPage"
-                color="#404040"
-                @input="getNextOrPreviousRecipes"
-        ></v-pagination>
+        <v-flex class="pagination">
+            <v-btn :disabled="page === 1" @click="previousPage" class="pagButton"> <i aria-hidden="true" class="v-icon material-icons theme--light">chevron_left</i>  </v-btn>
+            <v-btn color="#404040" class="pagButton white--text">{{page}}</v-btn>
+            <v-btn @click="nextPage" class="pagButton"> <i aria-hidden="true" class="v-icon material-icons theme--light">chevron_right</i> </v-btn>
+        </v-flex>
     </v-layout>
 </template>
 
@@ -83,41 +78,16 @@
             filters: Object
         },
         methods: {
-            getNextOrPreviousRecipes() {
-                client.getRecipes(this.page)
-                    .then(response => {
-                        if (response.ok) return response.json();
-                        else throw new Error("HTTP response status not code 200 as expected.");
-                    })
-                    .then(recipesJson => {
-                        this.recipes = recipesJson.filter((recipe)=>recipe.name);
-                        this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
-                    });
-            },
             nextPage() {
-                if (this.page <= this.totalPages) {
-                    client.getRecipes(this.page)
-                        .then(response => {
-                            if (response.ok) return response.json();
-                            else throw new Error("HTTP response status not code 200 as expected.");
-                        })
-                        .then(recipesJson => {
-                            this.recipes = recipesJson.filter((recipe)=>recipe.name);
-                            this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
-                        });
+                this.page++;
+                if(!this.filterRecipes(this.page)){
+                    this.page--;
                 }
             },
             previousPage() {
-                if (this.page >= 1) {
-                    client.getRecipes(this.page)
-                        .then(response => {
-                            if (response.ok) return response.json();
-                            else throw new Error("HTTP response status not code 200 as expected.");
-                        })
-                        .then(recipesJson => {
-                            this.recipes = recipesJson.filter((recipe)=>recipe.name);
-                            this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
-                        });
+                if(this.page >= 1) {
+                    this.page--;
+                    this.filterRecipes(this.page);
                 }
             },
             addIngredient() {
@@ -150,28 +120,43 @@
             searchIngredient(ingredient) {
                 this.$emit("searchIngredient", ingredient);
             },
-            filterRecipes() {
+            filterRecipes(page) {
+                this.page = page ? page : 1;
                 let newDisplayedRecipes = [];
                 if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient && this.filters.ingredient !== "") {
-                    client.getRecipesByName(this.filters.ingredient)
+                    console.log("hey");
+                    client.getRecipesByName(this.filters.ingredient, this.page)
                         .then((recipes) => {
                             if (recipes.ok) return recipes.json();
                             else throw new Error("HTTP response status not code 200 as expected.");
                         })
                         .then((recipesJson) => {
-                            newDisplayedRecipes = recipesJson;
-                            if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
-                                newDisplayedRecipes = newDisplayedRecipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax)
-                            }
+                        newDisplayedRecipes = recipesJson;
+                        if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
+                            newDisplayedRecipes = newDisplayedRecipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax)
+                        }
+                        if(newDisplayedRecipes.length > 0) {
                             this.displayedRecipes = newDisplayedRecipes;
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
                     });
                 }
                 else if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
-                    newDisplayedRecipes = this.recipes.filter((recipe) => recipe.ingredients.length <= this.filters.ingredientsNumberMax);
-                    this.displayedRecipes = newDisplayedRecipes;
+                    newDisplayedRecipes = this.recipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax);
+                    if(newDisplayedRecipes.length > 0) {
+                        this.displayedRecipes = newDisplayedRecipes;
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
                 }
                 else {
-                    this.displayedRecipes = this.recipes;
+                    this.getAllRecipes();
+                    return true;
                 }
             },
             getRecipePrice(recipe) {
@@ -181,25 +166,21 @@
                         else throw new Error("HTTP response status not code 200 as expected.");
                     })
                     .then((response) => this.price = response.price);
-            }
-        },
-        mounted() {
-            client.getRecipesNumber()
-                .then(response => {
-                    if (response.ok) return response.json();
-                    else throw new Error("HTTP response status not code 200 as expected.");
-                })
-                .then(resJson => {
-                    this.totalPages = Math.ceil(resJson.items / 8);
-                });
-            client.getRecipes(this.page)
-                .then(response => {
-                    if (response.ok) return response.json();
-                    else throw new Error("HTTP response status not code 200 as expected.");
-                }).then(recipesJson => {
+            },
+            getAllRecipes() {
+                client.getRecipes(this.page)
+                    .then(response => {
+                        if (response.ok) return response.json();
+                        else
+                            throw new Error("HTTP response status not code 200 as expected.");
+                    }).then(recipesJson => {
                     this.recipes = recipesJson.filter((recipe)=>recipe.name);
                     this.displayedRecipes = recipesJson.filter((recipe)=>recipe.name);
                 });
+            }
+        },
+        mounted() {
+           this.getAllRecipes()
         },
         watch: {
             filters: function() {
@@ -264,5 +245,9 @@
     }
     .textField {
         margin-bottom: 5px;
+    }
+    .pagButton {
+        min-width: 0!important;
+        border-radius: 5px;
     }
 </style>

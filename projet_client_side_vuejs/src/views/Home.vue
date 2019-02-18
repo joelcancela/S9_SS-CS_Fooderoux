@@ -53,6 +53,7 @@
             </v-flex>
             <v-flex xs8 class="mainItemsContainer">
               <component
+                :region="selectedCountry"
                 :search="search"
                 :filters="filters"
                 v-on:searchIngredient="(ingredient) => autoSearch(ingredient)"

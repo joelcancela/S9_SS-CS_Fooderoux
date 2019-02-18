@@ -37,8 +37,8 @@ export function createRecipe(name, ingredients) {
     return post(URL + "/api/recipes",{"name": name, "ingredients": ingredients});
 }
 
-export function getRecipesByName(ingredient) {
-    return get(URL + "/api/recipes?contains="+ingredient);
+export function getRecipesByName(ingredient, page) {
+    return get(URL + "/api/recipes?contains="+ingredient+"&page="+page);
 }
 
 export function postPrice(itemID, price, name) {

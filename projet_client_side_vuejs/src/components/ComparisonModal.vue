@@ -1,7 +1,7 @@
 <template>
-    <v-layout row>
+    <v-flex class="uselessFlex">
         <v-dialog class="mainContainer" :disabled="buttonDisabled" v-model="dialog" max-width="80%">
-            <v-btn slot="activator" color="#404040" class="white--text">Comparer</v-btn>
+            <v-btn slot="activator" color="#404040" class="white--text button">Comparer</v-btn>
             <v-card flat>
                 <v-card-title>
                     <v-icon @click="closeDialog" color="red" class="closeIcon">close</v-icon>
@@ -49,7 +49,7 @@
                 </v-card-text>
             </v-card>
         </v-dialog>
-    </v-layout>
+    </v-flex>
 </template>
 
 <script>
@@ -160,5 +160,13 @@
         overflow-x: auto;
         display: flex;
         flex-direction: row;
+    }
+    .button {
+        margin: 6px 4px;
+    }
+    .uselessFlex {
+        display: flex;
+        flex-direction: row;
+        flex: none;
     }
 </style>

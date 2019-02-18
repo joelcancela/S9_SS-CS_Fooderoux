@@ -24,7 +24,14 @@
                 </v-flex>
 
                 <v-flex xs2 class="comparisonButton">
-                    <ComparisonModal :buttonDisabled="selectedItems < 2" :items="getSelectedItems()" :itemsSelected="selectedItems"/>
+                    <v-flex class="bottomDiv">
+                        <ComparisonModal :buttonDisabled="selectedItems < 2" :items="getSelectedItems()" :itemsSelected="selectedItems"/>
+                        <v-flex class="pagination">
+                            <v-btn :disabled="page === 1" @click="previousPage" class="pagButton"> <i aria-hidden="true" class="v-icon material-icons theme--light">chevron_left</i>  </v-btn>
+                            <v-btn color="#404040" class="pagButton white--text">{{page}}</v-btn>
+                            <v-btn @click="nextPage" class="pagButton"> <i aria-hidden="true" class="v-icon material-icons theme--light">chevron_right</i> </v-btn>
+                        </v-flex>
+                    </v-flex>
                 </v-flex>
             </v-layout>
         </v-container>
@@ -49,15 +56,26 @@
         },
         data: function() {
             return {
-                items: this.getAliments(),
+                items: this.getAliments(this.page),
                 checkboxes: this.initCheckboxes(),
                 selectedItems: 0,
                 dialog: false,
+                page: 1,
             };
         },
         methods: {
-            getAliments() {
-                Client.getFoods(this.generateParams())
+            nextPage() {
+                this.page+=1;
+                this.getAliments(this.page)
+            },
+            previousPage() {
+                if(this.page > 1) {
+                    this.page-=1;
+                    this.getAliments(this.page)
+                }
+            },
+            getAliments(page) {
+                Client.getFoods(this.generateParams(page, 20))
                     .then((response) => {
                         if (response.ok) return response.json();
                         else throw new Error("HTTP response status not code 200 as expected.");
@@ -86,8 +104,10 @@
             dialogClicked(item) {
                 this.$refs.ItemModal.dialogClicked(item);
             },
-            generateParams() {
-                let params = {name: this.search, limit: 20};
+            generateParams(page, limit) {
+                let params = {name: this.search};
+                limit ? params["limit"] = limit : null;
+                page ? params["page"] = page : null;
                 if (this.filters.hasOwnProperty("quantity") && this.filters.quantity !== "" && this.filters.quantity !== null) {
                     params.quantity = this.filters.quantity;
                 }
@@ -124,6 +144,9 @@
     .mainContainer {
         background-color: #bfbfbf;
         padding: 5px;
+        max-height: 85vh;
+        position: absolute;
+        top: 0;
     }
     .list {
         max-height: 75vh;
@@ -149,7 +172,15 @@
         font-size: small;
     }
     .comparisonButton {
-        height: 5vh;
-        margin-top: 10px;
+        width: 100%;
+    }
+    .bottomDiv {
+        display: flex;
+        flex-direction: row;
+        width: 100%;
+    }
+    .pagButton {
+        min-width: 0!important;
+        border-radius: 5px;
     }
 </style>

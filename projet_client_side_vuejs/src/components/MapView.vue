@@ -67,7 +67,7 @@ export default {
   },
   methods: {
     getStores() {
-      client.getStoresFromRegion("us")
+      client.getStoresFromRegion(this.region)
         .then(response => {
           if (response.ok) return response.json();
           else
