@@ -36,11 +36,7 @@ function getStoresInRegion(req, res) {
                     return; // Continue
                 }
 
-                let store_hash =
-                    String(store.storeId) +
-                    String(store.name) +
-                    String(store.location.coordinates.lat) +
-                    String(store.location.coordinates.lng);
+                let store_hash = String(store._uuid);
                 if (!known_stores.includes(store_hash)) {
                     stores.push(store);
                     known_stores.push(store_hash)

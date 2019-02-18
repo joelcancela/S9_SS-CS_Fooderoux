@@ -205,7 +205,7 @@ async function postPriceForFood(req, res) {
     let itemId = - 1;
     let price = -1;
     let store = {
-        "storeId": -1,
+        "_uuid": -1,
         "name": "",
         "location": {
             "type": "Point",
@@ -268,7 +268,7 @@ async function postPriceForFood(req, res) {
     }
     store.country_code = region.country_code;
     // Id
-    store['storeId'] = String(hash(store)).trim(); // Generate unique Id for the given store
+    store['_uuid'] = String(hash(store)).trim(); // Generate unique Id for the given store
     /* ============================================================================================================== */
 
     foodDb().find({ _id: itemId }).toArray(function (err, result_collection) {
