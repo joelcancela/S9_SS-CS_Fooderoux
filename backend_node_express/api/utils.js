@@ -253,9 +253,6 @@ async function getCityFromGPSCoordinates(req, res) {
 }
 
 exports.home = home;
-//exports.getCityFromGPSCoordinates = getCityFromGPSCoordinates;
 exports.getStoresInRegion = getStoresInRegion;
-//exports.getGPSCoordinatesFromLocation = getGPSCoordinatesFromLocation;
-
 exports.doGPSCoordinatesFromLocation = doGPSCoordinatesFromLocation; // Required while posting new price
 exports.doCityFromGPSCoordinates = doCityFromGPSCoordinates; // Required while posting new price
