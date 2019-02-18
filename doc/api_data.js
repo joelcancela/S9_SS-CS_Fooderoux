@@ -393,7 +393,7 @@ define({ "api": [
   {
     "group": "Util",
     "type": "get",
-    "url": "/stores/search",
+    "url": "/api/stores/search",
     "title": "Get stores in a selected region",
     "name": "getStoresInRegion",
     "version": "1.0.0",

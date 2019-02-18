@@ -26,7 +26,7 @@ function home(req, res) {
  * @author     Nikita ROUSSEAU <nikita.rousseau@etu.unice.fr>
  * @version    Release: @1.0.0@
  *
- * @api {get} /stores/search Get stores in a selected region
+ * @api {get} /api/stores/search Get stores in a selected region
  * @apiName getStoresInRegion
  * @apiVersion 1.0.0
  * @apiParam {String} region ISO country code (i.e. us)
