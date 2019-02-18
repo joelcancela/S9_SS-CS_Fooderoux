@@ -57,6 +57,71 @@ function getStoresInRegion(req, res) {
     });
 }
 
+/* LOCATION GEOCODING */
+
+async function getGPSCoordinatesFromLocation(req, res) {
+
+    let location;
+    let coordinates;
+    if (req.query.name == null) {
+        res.status(400).send("Missing location name.");
+        return;
+    }
+    location = req.query.name;
+
+    try {
+        coordinates = await doGPSCoordinatesFromLocation(location);
+    }
+    catch(e) {
+        console.log(e);
+        // error
+        res.status(400).send(e);
+    }
+
+    if (coordinates != null && coordinates.lat && coordinates.lng) {
+        res.send(coordinates);
+    } else {
+        res.status(404).send();
+    }
+}
+
+function doGPSCoordinatesFromLocation(location) {
+    if (location == null) {
+        return null;
+    }
+    return new Promise (resolve => {
+        request.get(
+            {
+                url: "https://nominatim.openstreetmap.org/search.php",
+                headers: {
+                    'User-Agent': 'NPM/Request S9_WEBSRV',
+                    'Referer': 'about:blank'
+                },
+                qs: {
+                    "format": "json",
+                    "q": String(location)
+                },
+                json: true
+            },
+            (e, r, body) => {
+                if (e) {
+                    throw new Error(String(e));
+                }
+                if (body.length > 0) {
+                    resolve({
+                        "lat": body[0].lat,
+                        "lng": body[0].lon
+                    });
+                } else {
+                    return resolve({});
+                }
+            }
+        );
+    })
+}
+
+/* ENHANCED GEOCODING BY GPS */
+
 function getCityFromGPSCoordinates(req, res) {
 
     let lon;
@@ -105,3 +170,4 @@ function getCityFromGPSCoordinates(req, res) {
 exports.home = home;
 exports.getCityFromGPSCoordinates = getCityFromGPSCoordinates;
 exports.getStoresInRegion = getStoresInRegion;
+exports.getGPSCoordinatesFromLocation = getGPSCoordinatesFromLocation;

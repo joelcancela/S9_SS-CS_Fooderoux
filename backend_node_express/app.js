@@ -69,6 +69,7 @@ app.get('/api/regions/resolve', utils.getCityFromGPSCoordinates);
  * }
  */
 app.get('/api/stores/search', utils.getStoresInRegion);
+app.get('/api/stores/search/gps', utils.getGPSCoordinatesFromLocation);
 
 /**************************** Food ****************************/
 app.get('/api/stats', foods.getFoodCount);
@@ -87,16 +88,7 @@ app.get('/api/foods/:itemId', foods.getFoodById);
  * {
  *  "price": 11,
  *  "store": {
- *    "storeId": 42,
- *    "name": "TotoShop42",
- *    "location": {
- *      "type": "Point",
- *      "coordinates": {
- *        "lat": -73.856077,
- *        "lng": 40.848447
- *      }
- *    },
- *    "country_code": "us"
+ *    "name": "Carrefour Antibes"
  *  }
  * }
  *

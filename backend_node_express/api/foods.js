@@ -1,6 +1,7 @@
 /**************************** Food API (/foods) ****************************/
 const foodDb = require('../mongodb/mongo').getFoodDb; // Connection to food collection
 const uuidv4 = require('uuid/v4'); // UUID generator
+const hash = require('object-hash');
 const assert = require('assert'); // Assertions
 const Food = require('../model/food');
 
@@ -229,11 +230,21 @@ function postPriceForFood(req, res) {
     }
     price = req.body.price;
     // store
-    if (req.body["store"] == null) {
-        res.status(400).send("Missing store object.");
+    if (req.body["store"] == null || req.body["store"]["name"] == null) {
+        res.status(400).send("Missing store object/name.");
         return;
     }
-    store = req.body["store"];
+
+    /* Store object definition */
+    // Name
+    store.name = req.body["store"]["name"];
+    // GPS Location
+
+    // Region
+
+    // Id
+    store['storeId'] = hash(store); // Generate unique Id for the given store
+    /* End: Store Object*/
 
     foodDb().find({ _id: itemId }).toArray(function (err, result_collection) {
         assert.equal(err, null);
