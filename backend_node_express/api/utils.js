@@ -13,7 +13,7 @@ const assert = require('assert'); // Assertions
  * @apiName home
  * @apiVersion 1.0.0
  * @apiSuccess {String} result A nice message
- * @apiSuccessExample {json} On success
+ * @apiSuccessExample {String} On success
  * Server online
  */
 function home(req, res) {

@@ -10,12 +10,12 @@ const ObjectId = require('mongodb').ObjectId; //Used to make Mongo recognize ids
  * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
  * @version    Release: @1.0.0@
  *
- * @api {get} /
- * @apiName home
+ * @api {get} /api/recipes/stats Get recipes count in database
+ * @apiName getRecipeCount
  * @apiVersion 1.0.0
- * @apiParam {String} lastname     Mandatory Lastname.
- * @apiParam {String} [firstname]  Optional Firstname of the User.
- * @apiSuccess {String} result Server online
+ * @apiSuccess {json} result A JSON containing the number of recipes in database
+ * @apiSuccessExample {json} On success
+ * { items: 7 }
  */
 function getRecipeCount(req, res) {
     recipeDb().stats(function (err, stats) {
@@ -29,12 +29,13 @@ function getRecipeCount(req, res) {
  * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
  * @version    Release: @1.0.0@
  *
- * @api {get} /
- * @apiName home
+ * @api {get} /api/recipes Get all recipes from database
+ * @apiName getAllRecipes
  * @apiVersion 1.0.0
- * @apiParam {String} lastname     Mandatory Lastname.
- * @apiParam {String} [firstname]  Optional Firstname of the User.
- * @apiSuccess {String} result Server online
+ * @apiParam {String} [firstname]  Optional Firstname of the User.//TODO:
+ * @apiSuccess {json} result A JSON containing the number of recipes in database
+ * @apiSuccessExample {json} On success
+ * { items: 7 }//TODO:
  */
 function getAllRecipes(req, res) {
     let pagesize = 50;
@@ -75,12 +76,11 @@ function getAllRecipes(req, res) {
  * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
  * @version    Release: @1.0.0@
  *
- * @api {get} /
- * @apiName home
+ * @api {get} /api/recipes/:recipeId Get a specific recipe by its id
+ * @apiName getRecipeById
  * @apiVersion 1.0.0
- * @apiParam {String} lastname     Mandatory Lastname.
- * @apiParam {String} [firstname]  Optional Firstname of the User.
- * @apiSuccess {String} result Server online
+ * @apiParam {String} recipeId the id of the recipe
+ * @apiSuccess {String} result Server onlineTODO:
  */
 function getRecipeById(req, res) {
     let id = req.params.recipeId;
@@ -100,12 +100,11 @@ function getRecipeById(req, res) {
  * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
  * @version    Release: @1.0.0@
  *
- * @api {get} /
- * @apiName home
+ * @api {get} /api/recipes/:recipeId/price Get the average price of a recipe
+ * @apiName getRecipePrice
  * @apiVersion 1.0.0
- * @apiParam {String} lastname     Mandatory Lastname.
- * @apiParam {String} [firstname]  Optional Firstname of the User.
- * @apiSuccess {String} result Server online
+ * @apiParam {String} recipeId  the id of the recipe
+ * @apiSuccess {String} result Server onlineTODO:
  */
 function getRecipePrice(req, res) {
     let id = req.params.recipeId;
@@ -160,11 +159,13 @@ function getRecipePrice(req, res) {
  * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
  * @version    Release: @1.0.0@
  *
- * @api {get} /
- * @apiName home
+ * @api {post} /api/recipes/parse Parse a given recipe
+ * @apiName parseRecipe
  * @apiVersion 1.0.0
- * @apiParam {String} lastname     Mandatory Lastname.
- * @apiParam {String} [firstname]  Optional Firstname of the User.
+ * @apiParamExample {json} Request-Example://TODO:
+ *     {
+ *       "id": 4711
+ *     }
  * @apiSuccess {String} result Server online
  */
 function parseRecipe(req, res) {
@@ -204,12 +205,11 @@ function parseRecipe(req, res) {
  * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
  * @version    Release: @1.0.0@
  *
- * @api {get} /
- * @apiName home
+ * @api {post} /api/recipes Create a recipe
+ * @apiName postRecipe
  * @apiVersion 1.0.0
- * @apiParam {String} lastname     Mandatory Lastname.
- * @apiParam {String} [firstname]  Optional Firstname of the User.
- * @apiSuccess {String} result Server online
+ * @apiParam {String} lastname Mandatory Lastname.
+ * @apiSuccess {String} result TODO:
  */
 function postRecipe(req, res) {
     let data = req.body;
@@ -227,11 +227,10 @@ function postRecipe(req, res) {
  * @author     Joël Cancela Vaz <joel.cancelavaz@gmail.com>
  * @version    Release: @1.0.0@
  *
- * @api {get} /
- * @apiName home
+ * @api {post} /api/recipes/:recipeId/comment Comment on a given recipe
+ * @apiName postCommentOnRecipe
  * @apiVersion 1.0.0
- * @apiParam {String} lastname     Mandatory Lastname.
- * @apiParam {String} lastname     Mandatory Lastname.
+ * @apiParam {String} lastname Mandatory Lastname.TODO:
  * @apiSuccess {String} result Server online
  */
 function postCommentOnRecipe(req, res) {

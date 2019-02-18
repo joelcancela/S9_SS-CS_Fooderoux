@@ -148,9 +148,186 @@ define({ "api": [
   {
     "group": "Recipe",
     "type": "get",
-    "url": "/",
-    "title": "",
-    "name": "home",
+    "url": "/api/recipes",
+    "title": "Get all recipes from database",
+    "name": "getAllRecipes",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "firstname",
+            "description": "<p>Optional Firstname of the User.//TODO:</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "result",
+            "description": "<p>A JSON containing the number of recipes in database</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "On success",
+          "content": "{ items: 7 }//TODO:",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "backend_node_express/api/recipes.js",
+    "groupTitle": "Recipe"
+  },
+  {
+    "group": "Recipe",
+    "type": "get",
+    "url": "/api/recipes/:recipeId",
+    "title": "Get a specific recipe by its id",
+    "name": "getRecipeById",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "recipeId",
+            "description": "<p>the id of the recipe</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Server onlineTODO:</p>"
+          }
+        ]
+      }
+    },
+    "filename": "backend_node_express/api/recipes.js",
+    "groupTitle": "Recipe"
+  },
+  {
+    "group": "Recipe",
+    "type": "get",
+    "url": "/api/recipes/stats",
+    "title": "Get recipes count in database",
+    "name": "getRecipeCount",
+    "version": "1.0.0",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "json",
+            "optional": false,
+            "field": "result",
+            "description": "<p>A JSON containing the number of recipes in database</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "On success",
+          "content": "{ items: 7 }",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "backend_node_express/api/recipes.js",
+    "groupTitle": "Recipe"
+  },
+  {
+    "group": "Recipe",
+    "type": "get",
+    "url": "/api/recipes/:recipeId/price",
+    "title": "Get the average price of a recipe",
+    "name": "getRecipePrice",
+    "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "recipeId",
+            "description": "<p>the id of the recipe</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Server onlineTODO:</p>"
+          }
+        ]
+      }
+    },
+    "filename": "backend_node_express/api/recipes.js",
+    "groupTitle": "Recipe"
+  },
+  {
+    "group": "Recipe",
+    "type": "post",
+    "url": "/api/recipes/parse",
+    "title": "Parse a given recipe",
+    "name": "parseRecipe",
+    "version": "1.0.0",
+    "parameter": {
+      "examples": [
+        {
+          "title": "Request-Example://TODO:",
+          "content": "{\n  \"id\": 4711\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "result",
+            "description": "<p>Server online</p>"
+          }
+        ]
+      }
+    },
+    "filename": "backend_node_express/api/recipes.js",
+    "groupTitle": "Recipe"
+  },
+  {
+    "group": "Recipe",
+    "type": "post",
+    "url": "/api/recipes/:recipeId/comment",
+    "title": "Comment on a given recipe",
+    "name": "postCommentOnRecipe",
     "version": "1.0.0",
     "parameter": {
       "fields": {
@@ -160,14 +337,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "lastname",
-            "description": "<p>Mandatory Lastname.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "firstname",
-            "description": "<p>Optional Firstname of the User.</p>"
+            "description": "<p>Mandatory Lastname.TODO:</p>"
           }
         ]
       }
@@ -190,225 +360,10 @@ define({ "api": [
   },
   {
     "group": "Recipe",
-    "type": "get",
-    "url": "/",
-    "title": "",
-    "name": "home",
-    "version": "1.0.0",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lastname",
-            "description": "<p>Mandatory Lastname.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "firstname",
-            "description": "<p>Optional Firstname of the User.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "result",
-            "description": "<p>Server online</p>"
-          }
-        ]
-      }
-    },
-    "filename": "backend_node_express/api/recipes.js",
-    "groupTitle": "Recipe"
-  },
-  {
-    "group": "Recipe",
-    "type": "get",
-    "url": "/",
-    "title": "",
-    "name": "home",
-    "version": "1.0.0",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lastname",
-            "description": "<p>Mandatory Lastname.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "firstname",
-            "description": "<p>Optional Firstname of the User.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "result",
-            "description": "<p>Server online</p>"
-          }
-        ]
-      }
-    },
-    "filename": "backend_node_express/api/recipes.js",
-    "groupTitle": "Recipe"
-  },
-  {
-    "group": "Recipe",
-    "type": "get",
-    "url": "/",
-    "title": "",
-    "name": "home",
-    "version": "1.0.0",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lastname",
-            "description": "<p>Mandatory Lastname.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "firstname",
-            "description": "<p>Optional Firstname of the User.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "result",
-            "description": "<p>Server online</p>"
-          }
-        ]
-      }
-    },
-    "filename": "backend_node_express/api/recipes.js",
-    "groupTitle": "Recipe"
-  },
-  {
-    "group": "Recipe",
-    "type": "get",
-    "url": "/",
-    "title": "",
-    "name": "home",
-    "version": "1.0.0",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lastname",
-            "description": "<p>Mandatory Lastname.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "firstname",
-            "description": "<p>Optional Firstname of the User.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "result",
-            "description": "<p>Server online</p>"
-          }
-        ]
-      }
-    },
-    "filename": "backend_node_express/api/recipes.js",
-    "groupTitle": "Recipe"
-  },
-  {
-    "group": "Recipe",
-    "type": "get",
-    "url": "/",
-    "title": "",
-    "name": "home",
-    "version": "1.0.0",
-    "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lastname",
-            "description": "<p>Mandatory Lastname.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
-            "field": "firstname",
-            "description": "<p>Optional Firstname of the User.</p>"
-          }
-        ]
-      }
-    },
-    "success": {
-      "fields": {
-        "Success 200": [
-          {
-            "group": "Success 200",
-            "type": "String",
-            "optional": false,
-            "field": "result",
-            "description": "<p>Server online</p>"
-          }
-        ]
-      }
-    },
-    "filename": "backend_node_express/api/recipes.js",
-    "groupTitle": "Recipe"
-  },
-  {
-    "group": "Recipe",
-    "type": "get",
-    "url": "/",
-    "title": "",
-    "name": "home",
+    "type": "post",
+    "url": "/api/recipes",
+    "title": "Create a recipe",
+    "name": "postRecipe",
     "version": "1.0.0",
     "parameter": {
       "fields": {
@@ -431,7 +386,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "result",
-            "description": "<p>Server online</p>"
+            "description": "<p>TODO:</p>"
           }
         ]
       }
@@ -481,7 +436,7 @@ define({ "api": [
       "examples": [
         {
           "title": "On success",
-          "content": "{\n  \"island\": \"Hunter Island\",\n  \"county\": \"Bronx County\",\n  \"city\": \"NYC\",\n  \"state\": \"New York\",\n  \"postcode\": \"10805\",\n  \"country\": \"USA\",\n  \"country_code\": \"us\"\n}",
+          "content": "/* LOCATION GEOCODING",
           "type": "json"
         }
       ]
@@ -547,7 +502,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "result",
-            "description": ""
+            "description": "<p>A nice message</p>"
           }
         ]
       },
@@ -555,7 +510,7 @@ define({ "api": [
         {
           "title": "On success",
           "content": "Server online",
-          "type": "json"
+          "type": "String"
         }
       ]
     },
