@@ -273,7 +273,7 @@ function getFoodById(req, res) {
 /**
  * @category   Fooderoux
  * @apiGroup   Food
- * @author     Nikita ROUSSEAU
+ * @author     Nikita ROUSSEAU <nikita.rousseau@etu.unice.fr>
  * @version    Release: @1.0.0@
  *
  * @api {post} /api/foods/:itemId/pricing Add pricing to an item
