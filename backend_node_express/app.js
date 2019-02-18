@@ -36,26 +36,6 @@ app.listen(port, function () {
  */
 /**************************** Utils ****************************/
 app.get('/', utils.home);
-/**
- * Region reverse geocoding by long/lat
- * Valid longitude values are between -180 and 180, both inclusive.
- * Valid latitude values are between -90 and 90 (both inclusive).
- *
- * @author: Nikita ROUSSEAU
- *
- * Request: [GET] http://localhost:3000/api/regions/resolve?lon=-73.856077&lat=40.848447
- * Response:
- * {
- *   "island": "Hunter Island",
- *   "county": "Bronx County",
- *   "city": "NYC",
- *   "state": "New York",
- *   "postcode": "10805",
- *   "country": "USA",
- *   "country_code": "us"
- * }
- */
-app.get('/api/regions/resolve', utils.getCityFromGPSCoordinates);
 
 /**
  * Given a <country_code> (ISO), fetch all known stores
@@ -69,7 +49,6 @@ app.get('/api/regions/resolve', utils.getCityFromGPSCoordinates);
  * }
  */
 app.get('/api/stores/search', utils.getStoresInRegion);
-app.get('/api/stores/search/gps', utils.getGPSCoordinatesFromLocation);
 
 /**************************** Food ****************************/
 app.get('/api/stats', foods.getFoodCount);

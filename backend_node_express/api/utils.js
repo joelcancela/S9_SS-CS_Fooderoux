@@ -59,32 +59,6 @@ function getStoresInRegion(req, res) {
 
 /* LOCATION GEOCODING */
 
-async function getGPSCoordinatesFromLocation(req, res) {
-
-    let location;
-    let coordinates;
-    if (req.query.name == null) {
-        res.status(400).send("Missing location name.");
-        return;
-    }
-    location = req.query.name;
-
-    try {
-        coordinates = await doGPSCoordinatesFromLocation(location);
-    }
-    catch(e) {
-        console.log(e);
-        // error
-        res.status(400).send(e);
-    }
-
-    if (coordinates != null && coordinates.lat && coordinates.lng) {
-        res.send(coordinates);
-    } else {
-        res.status(404).send();
-    }
-}
-
 function doGPSCoordinatesFromLocation(location) {
     if (location == null) {
         return null;
@@ -120,8 +94,52 @@ function doGPSCoordinatesFromLocation(location) {
     })
 }
 
+async function getGPSCoordinatesFromLocation(req, res) {
+
+    let location;
+    let coordinates;
+    if (req.query.name == null) {
+        res.status(400).send("Missing location name.");
+        return;
+    }
+    location = req.query.name;
+
+    try {
+        coordinates = await doGPSCoordinatesFromLocation(location);
+    }
+    catch(e) {
+        console.log(e);
+        // error
+        res.status(400).send(e);
+    }
+
+    if (coordinates != null && coordinates.lat && coordinates.lng) {
+        res.send(coordinates);
+    } else {
+        res.status(404).send();
+    }
+}
+
 /* ENHANCED GEOCODING BY GPS */
 
+/**
+ * Region reverse geocoding by long/lat
+ * Valid longitude values are between -180 and 180, both inclusive.
+ * Valid latitude values are between -90 and 90 (both inclusive).
+ *
+ * @author: Nikita ROUSSEAU
+ *
+ * Response:
+ * {
+ *   "island": "Hunter Island",
+ *   "county": "Bronx County",
+ *   "city": "NYC",
+ *   "state": "New York",
+ *   "postcode": "10805",
+ *   "country": "USA",
+ *   "country_code": "us"
+ * }
+ */
 function doCityFromGPSCoordinates(lon, lat) {
     if (lon == null) {
         return null;
@@ -196,9 +214,9 @@ async function getCityFromGPSCoordinates(req, res) {
 }
 
 exports.home = home;
-exports.getCityFromGPSCoordinates = getCityFromGPSCoordinates;
+//exports.getCityFromGPSCoordinates = getCityFromGPSCoordinates;
 exports.getStoresInRegion = getStoresInRegion;
-exports.getGPSCoordinatesFromLocation = getGPSCoordinatesFromLocation;
+//exports.getGPSCoordinatesFromLocation = getGPSCoordinatesFromLocation;
 
 exports.doGPSCoordinatesFromLocation = doGPSCoordinatesFromLocation; // Required while posting new price
 exports.doCityFromGPSCoordinates = doCityFromGPSCoordinates; // Required while posting new price
