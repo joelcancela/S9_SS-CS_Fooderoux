@@ -29,8 +29,8 @@ function home(req, res) {
  * @api {get} /api/stores/search Get stores in a selected region
  * @apiName getStoresInRegion
  * @apiVersion 1.0.0
- * @apiParam {String} region ISO country code (i.e. us)
- * @apiSuccess {String} result a JSON containing a stores key with an array
+ * @apiParam {String} region Query param - ISO country code (i.e. fr)
+ * @apiSuccess {JSON} result a JSON containing a stores key with an array
  * @apiSuccessExample {json} On success
  * {
  *     "stores": [
@@ -96,9 +96,6 @@ function getStoresInRegion(req, res) {
     });
 }
 
-
-/* LOCATION GEOCODING */
-
 /**
  * Given a String Location, resolve to GPS coordinates
  * @param location
@@ -138,8 +135,6 @@ function doGPSCoordinatesFromLocation(location) {
         );
     })
 }
-
-/* ENHANCED GEOCODING BY GPS */
 
 /**
  * Region reverse geocoding by long/lat

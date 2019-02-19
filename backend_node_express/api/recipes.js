@@ -13,7 +13,7 @@ const ObjectId = require('mongodb').ObjectId; //Used to make Mongo recognize ids
  * @api {get} /api/recipes/stats Get recipes count in database
  * @apiName getRecipeCount
  * @apiVersion 1.0.0
- * @apiSuccess {json} result A JSON containing the number of recipes in database
+ * @apiSuccess {JSON} result A JSON containing the number of recipes in database
  * @apiSuccessExample {json} On success
  * { items: 7 }
  */
@@ -32,10 +32,29 @@ function getRecipeCount(req, res) {
  * @api {get} /api/recipes Get all recipes from database
  * @apiName getAllRecipes
  * @apiVersion 1.0.0
- * @apiParam {String} [firstname]  Optional Firstname of the User.//TODO:
- * @apiSuccess {json} result A JSON containing the number of recipes in database
+ * @apiParam {Number} [limit] Query param - Results limit per page (50 by default)
+ * @apiParam {Number} [page] Query param - Page number (1 by default)
+ * @apiParam {String} [sortBy] Query param - (values: name, date)
+ * @apiParam {String} [contains] Query param - Find the recipes containing the specified ingredients name
+ * @apiSuccess {JSON} result A JSON containing the number of recipes in database
  * @apiSuccessExample {json} On success
- * { items: 7 }//TODO:
+ * [
+  {
+    "_id": "5c6037882c8865136cad3976",
+    "name": "Pâtes Carbonara",
+    "ingredients": [
+      "10114992",
+      "0240891027483"
+    ],
+    "date": 1549809544496,
+    "comments": [
+      {
+        "username": "Le cuisiner",
+        "text": "Si tu sais pas faire ça, t'es pas italien"
+      }
+    ]
+  },...
+]
  */
 function getAllRecipes(req, res) {
     let pagesize = 50;
@@ -79,8 +98,26 @@ function getAllRecipes(req, res) {
  * @api {get} /api/recipes/:recipeId Get a specific recipe by its id
  * @apiName getRecipeById
  * @apiVersion 1.0.0
- * @apiParam {String} recipeId the id of the recipe
- * @apiSuccess {String} result Server onlineTODO:
+ * @apiParam {String} recipeId Path param - the id of the recipe
+ * @apiSuccess {JSON} result A JSON array containing the recipe matching the id (or not).
+ * @apiSuccessExample {json} On success
+ * [
+  {
+    "_id": "5c6037882c8865136cad3976",
+    "name": "Pâtes Carbonara",
+    "ingredients": [
+      "10114992",
+      "0240891027483"
+    ],
+    "date": 1549809544496,
+    "comments": [
+      {
+        "username": "Le cuisiner",
+        "text": "Si tu sais pas faire ça, t'es pas italien"
+      }
+    ]
+  }
+]
  */
 function getRecipeById(req, res) {
     let id = req.params.recipeId;
@@ -103,8 +140,12 @@ function getRecipeById(req, res) {
  * @api {get} /api/recipes/:recipeId/price Get the average price of a recipe
  * @apiName getRecipePrice
  * @apiVersion 1.0.0
- * @apiParam {String} recipeId  the id of the recipe
- * @apiSuccess {String} result Server onlineTODO:
+ * @apiParam {String} recipeId Path param - the id of the recipe
+ * @apiSuccess {JSON} result A JSON containing the sum of the average price of every ingredient of the recipe
+ * @apiSuccessExample {json} On success
+ * {
+  "price": 0
+}
  */
 function getRecipePrice(req, res) {
     let id = req.params.recipeId;
@@ -162,11 +203,19 @@ function getRecipePrice(req, res) {
  * @api {post} /api/recipes/parse Parse a given recipe
  * @apiName parseRecipe
  * @apiVersion 1.0.0
- * @apiParamExample {json} Request-Example://TODO:
- *     {
- *       "id": 4711
- *     }
- * @apiSuccess {String} result Server online
+ * @apiParamExample {json} Request-Example:
+ * {
+    "0":"macaroni",
+    "1":"cheese",
+    "filter":"e211" // Filter is optional
+}
+ * @apiSuccess {JSON} result A JSON containing for each ingredient, every possible matching food item
+ * @apiSuccessExample {json} On success
+ * {
+    "0": [
+        <items that are macaroni and don't have e211>],
+    "1":[]
+}
  */
 function parseRecipe(req, res) {
     let result = {}; // JSON answer
@@ -208,8 +257,18 @@ function parseRecipe(req, res) {
  * @api {post} /api/recipes Create a recipe
  * @apiName postRecipe
  * @apiVersion 1.0.0
- * @apiParam {String} lastname Mandatory Lastname.
- * @apiSuccess {String} result TODO:
+ * @apiParamExample {json} Request-Example:
+ * {
+    "name":"Ma recette",
+    "ingredients":["Chou","Fleur"]
+}
+
+ * @apiSuccess {JSON} result A JSON being the newest created recipe
+ * @apiSuccessExample {json} On success
+ * {
+    "name":"Ma recette",
+    "ingredients":["Chou","Fleur"]
+}
  */
 function postRecipe(req, res) {
     let data = req.body;
@@ -230,8 +289,18 @@ function postRecipe(req, res) {
  * @api {post} /api/recipes/:recipeId/comment Comment on a given recipe
  * @apiName postCommentOnRecipe
  * @apiVersion 1.0.0
- * @apiParam {String} lastname Mandatory Lastname.TODO:
- * @apiSuccess {String} result Server online
+ * @apiParam {String} recipeId Path param - the id of the recipe
+ * @apiParamExample {json} Request-Example:
+ * {
+    "comment":{
+        "username":"Le cuisiner",
+        "text": "Si tu sais pas faire ça, t'es pas italien",
+        "date": 10801808
+    }
+}
+ * @apiSuccess {JSON} result An empty JSON with status 200
+ * @apiSuccessExample {json} On success
+ * {}
  */
 function postCommentOnRecipe(req, res) {
     let data = req.body.comment;

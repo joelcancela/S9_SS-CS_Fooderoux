@@ -11,7 +11,7 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
             "description": "<p>A JSON containing the number of food item in database</p>"
@@ -36,22 +36,119 @@ define({ "api": [
     "title": "Get specific food items according to criterias",
     "name": "getFoods",
     "version": "1.0.0",
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Query param - Results limit per page (50 by default)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Query param - Page number (1 by default)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "name",
+            "description": "<p>Query param - Find the food items matching the specified name pattern</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "quantity",
+            "description": "<p>Query param - Find the food items with the specified serving size/quantity</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "store",
+            "description": "<p>Query param - Find the food items available in a specified store</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "nutrition_score",
+            "description": "<p>Query param - Find the food items with a nutrition score equal or above the specified nutrition score</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "ingredients",
+            "description": "<p>Query param -  Find the food items containing the specified ingredient</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "additives",
+            "description": "<p>Query param - Find the food items not containing the specified additive</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "nutriments",
+            "description": "<p>Query param - Find the food items containing the specified nutriment</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "allergens",
+            "description": "<p>Query param - Find the food items not containing the specified allergen</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "vitamins",
+            "description": "<p>Query param - Find the food items containing the specified vitamin</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "sortBy",
+            "description": "<p>Query param - (values: name, nutriscore or price)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Boolean",
+            "optional": true,
+            "field": "debug",
+            "description": "<p>Query param - To display the true results from database (without our model abstraction)</p>"
+          }
+        ]
+      }
+    },
     "success": {
       "fields": {
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
-            "description": "<p>A JSON array the food items with the requested criterias</p>"
+            "description": "<p>A JSON array containing the food items with the requested criterias</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "On success",
-          "content": "[{\n    \"_id\": \"00\",\n    \"name\": \"Lignaform\",\n    \"serving_size\": \"5 barres de 40gr\",\n    \"nutrition_grade\": \"c\",\n    \"ingredients\": [\n    ],\n    \"nutriments\": {...\n    },\n    \"allergens\": [],\n    \"vitamins\": [],\n    \"pricing\": [],\n    \"imgUrl\": \"https://static.openfoodfacts.org/images/products/00/front_fr.14.full.jpg\",\n    \"score\": \"c\",\n    \"avgPrice\": 0\n    }]",
+          "content": "[{\n    \"_id\": \"00\",\n    \"name\": \"Lignaform\",\n    \"serving_size\": \"5 barres de 40gr\",\n    \"nutrition_grade\": \"c\",\n    \"ingredients\": [\n    ],\n    \"nutriments\": {...\n    },\n    \"allergens\": [],\n    \"vitamins\": [],\n    \"pricing\": [],\n    \"imgUrl\": \"https://static.openfoodfacts.org/images/products/00/front_fr.14.full.jpg\",\n    \"score\": \"c\",\n    \"avgPrice\": 0\n  }]",
           "type": "json"
         }
       ]
@@ -74,7 +171,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "itemId",
-            "description": "<p>Mandatory ID of a given food item.</p>"
+            "description": "<p>Path param - ID of a given food item.</p>"
           }
         ]
       }
@@ -84,7 +181,7 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
             "description": "<p>A JSON array containing the matching element (or not)</p>"
@@ -110,6 +207,17 @@ define({ "api": [
     "name": "postPriceForFood",
     "version": "1.0.0",
     "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "itemId",
+            "description": "<p>Path param - ID of a given food item.</p>"
+          }
+        ]
+      },
       "examples": [
         {
           "title": "Request-Example:",
@@ -123,7 +231,7 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
             "description": "<p>Pricing information</p>"
@@ -153,10 +261,31 @@ define({ "api": [
         "Parameter": [
           {
             "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "limit",
+            "description": "<p>Query param - Results limit per page (50 by default)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Query param - Page number (1 by default)</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "String",
             "optional": true,
-            "field": "firstname",
-            "description": "<p>Optional Firstname of the User.//TODO:</p>"
+            "field": "sortBy",
+            "description": "<p>Query param - (values: name, date)</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "contains",
+            "description": "<p>Query param - Find the recipes containing the specified ingredients name</p>"
           }
         ]
       }
@@ -166,7 +295,7 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "json",
+            "type": "JSON",
             "optional": false,
             "field": "result",
             "description": "<p>A JSON containing the number of recipes in database</p>"
@@ -176,7 +305,7 @@ define({ "api": [
       "examples": [
         {
           "title": "On success",
-          "content": "{ items: 7 }//TODO:",
+          "content": "[\n  {\n    \"_id\": \"5c6037882c8865136cad3976\",\n    \"name\": \"Pâtes Carbonara\",\n    \"ingredients\": [\n      \"10114992\",\n      \"0240891027483\"\n    ],\n    \"date\": 1549809544496,\n    \"comments\": [\n      {\n        \"username\": \"Le cuisiner\",\n        \"text\": \"Si tu sais pas faire ça, t'es pas italien\"\n      }\n    ]\n  },...\n]",
           "type": "json"
         }
       ]
@@ -199,7 +328,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "recipeId",
-            "description": "<p>the id of the recipe</p>"
+            "description": "<p>Path param - the id of the recipe</p>"
           }
         ]
       }
@@ -209,13 +338,20 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
-            "description": "<p>Server onlineTODO:</p>"
+            "description": "<p>A JSON array containing the recipe matching the id (or not).</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "On success",
+          "content": "[\n  {\n    \"_id\": \"5c6037882c8865136cad3976\",\n    \"name\": \"Pâtes Carbonara\",\n    \"ingredients\": [\n      \"10114992\",\n      \"0240891027483\"\n    ],\n    \"date\": 1549809544496,\n    \"comments\": [\n      {\n        \"username\": \"Le cuisiner\",\n        \"text\": \"Si tu sais pas faire ça, t'es pas italien\"\n      }\n    ]\n  }\n]",
+          "type": "json"
+        }
+      ]
     },
     "filename": "backend_node_express/api/recipes.js",
     "groupTitle": "Recipe"
@@ -232,7 +368,7 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "json",
+            "type": "JSON",
             "optional": false,
             "field": "result",
             "description": "<p>A JSON containing the number of recipes in database</p>"
@@ -265,7 +401,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "recipeId",
-            "description": "<p>the id of the recipe</p>"
+            "description": "<p>Path param - the id of the recipe</p>"
           }
         ]
       }
@@ -275,13 +411,20 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
-            "description": "<p>Server onlineTODO:</p>"
+            "description": "<p>A JSON containing the sum of the average price of every ingredient of the recipe</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "On success",
+          "content": "{\n  \"price\": 0\n}",
+          "type": "json"
+        }
+      ]
     },
     "filename": "backend_node_express/api/recipes.js",
     "groupTitle": "Recipe"
@@ -296,8 +439,8 @@ define({ "api": [
     "parameter": {
       "examples": [
         {
-          "title": "Request-Example://TODO:",
-          "content": "{\n  \"id\": 4711\n}",
+          "title": "Request-Example:",
+          "content": "{\n    \"0\":\"macaroni\",\n    \"1\":\"cheese\",\n    \"filter\":\"e211\" // Filter is optional\n}",
           "type": "json"
         }
       ]
@@ -307,13 +450,20 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
-            "description": "<p>Server online</p>"
+            "description": "<p>A JSON containing for each ingredient, every possible matching food item</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "On success",
+          "content": "{\n    \"0\": [\n        <items that are macaroni and don't have e211>],\n    \"1\":[]\n}",
+          "type": "json"
+        }
+      ]
     },
     "filename": "backend_node_express/api/recipes.js",
     "groupTitle": "Recipe"
@@ -332,24 +482,38 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "lastname",
-            "description": "<p>Mandatory Lastname.TODO:</p>"
+            "field": "recipeId",
+            "description": "<p>Path param - the id of the recipe</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n    \"comment\":{\n        \"username\":\"Le cuisiner\",\n        \"text\": \"Si tu sais pas faire ça, t'es pas italien\",\n        \"date\": 10801808\n    }\n}",
+          "type": "json"
+        }
+      ]
     },
     "success": {
       "fields": {
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
-            "description": "<p>Server online</p>"
+            "description": "<p>An empty JSON with status 200</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "On success",
+          "content": "{}",
+          "type": "json"
+        }
+      ]
     },
     "filename": "backend_node_express/api/recipes.js",
     "groupTitle": "Recipe"
@@ -362,30 +526,33 @@ define({ "api": [
     "name": "postRecipe",
     "version": "1.0.0",
     "parameter": {
-      "fields": {
-        "Parameter": [
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
-            "field": "lastname",
-            "description": "<p>Mandatory Lastname.</p>"
-          }
-        ]
-      }
+      "examples": [
+        {
+          "title": "Request-Example:",
+          "content": "{\n    \"name\":\"Ma recette\",\n    \"ingredients\":[\"Chou\",\"Fleur\"]\n}",
+          "type": "json"
+        }
+      ]
     },
     "success": {
       "fields": {
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
-            "description": "<p>TODO:</p>"
+            "description": "<p>A JSON being the newest created recipe</p>"
           }
         ]
-      }
+      },
+      "examples": [
+        {
+          "title": "On success",
+          "content": "{\n    \"name\":\"Ma recette\",\n    \"ingredients\":[\"Chou\",\"Fleur\"]\n}",
+          "type": "json"
+        }
+      ]
     },
     "filename": "backend_node_express/api/recipes.js",
     "groupTitle": "Recipe"
@@ -405,7 +572,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "region",
-            "description": "<p>ISO country code (i.e. us)</p>"
+            "description": "<p>Query param - ISO country code (i.e. fr)</p>"
           }
         ]
       }
@@ -415,7 +582,7 @@ define({ "api": [
         "Success 200": [
           {
             "group": "Success 200",
-            "type": "String",
+            "type": "JSON",
             "optional": false,
             "field": "result",
             "description": "<p>a JSON containing a stores key with an array</p>"

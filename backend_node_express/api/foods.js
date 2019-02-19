@@ -15,7 +15,7 @@ const Food = require('../model/food');
  * @api {get} /api/stats Get food items count in database
  * @apiName getFoodCount
  * @apiVersion 1.0.0
- * @apiSuccess {String} result A JSON containing the number of food item in database
+ * @apiSuccess {JSON} result A JSON containing the number of food item in database
  * @apiSuccessExample {json} On success
  * { items: 28522 }
  */
@@ -34,7 +34,20 @@ function getFoodCount(req, res) {
  * @api {get} /api/foods Get specific food items according to criterias
  * @apiName getFoods
  * @apiVersion 1.0.0
- * @apiSuccess {String} result A JSON array the food items with the requested criterias
+ * @apiParam {Number} [limit] Query param - Results limit per page (50 by default)
+ * @apiParam {Number} [page] Query param - Page number (1 by default)
+ * @apiParam {String} [name] Query param - Find the food items matching the specified name pattern
+ * @apiParam {String} [quantity] Query param - Find the food items with the specified serving size/quantity
+ * @apiParam {String} [store] Query param - Find the food items available in a specified store
+ * @apiParam {String} [nutrition_score] Query param - Find the food items with a nutrition score equal or above the specified nutrition score
+ * @apiParam {String} [ingredients] Query param -  Find the food items containing the specified ingredient
+ * @apiParam {String} [additives] Query param - Find the food items not containing the specified additive
+ * @apiParam {String} [nutriments] Query param - Find the food items containing the specified nutriment
+ * @apiParam {String} [allergens] Query param - Find the food items not containing the specified allergen
+ * @apiParam {String} [vitamins] Query param - Find the food items containing the specified vitamin
+ * @apiParam {String} [sortBy] Query param - (values: name, nutriscore or price)
+ * @apiParam {Boolean} [debug] Query param - To display the true results from database (without our model abstraction)
+ * @apiSuccess {JSON} result A JSON array containing the food items with the requested criterias
  * @apiSuccessExample {json} On success
  * [{
     "_id": "00",
@@ -51,7 +64,7 @@ function getFoodCount(req, res) {
     "imgUrl": "https://static.openfoodfacts.org/images/products/00/front_fr.14.full.jpg",
     "score": "c",
     "avgPrice": 0
-    }]
+  }]
  */
 function getFoods(req, res, next) {
     let pagesize = 50;
@@ -232,8 +245,8 @@ function getFoods(req, res, next) {
  * @api {get} /api/foods/:itemId Get a specific food item with its id
  * @apiName home
  * @apiVersion 1.0.0
- * @apiParam {String} itemId  Mandatory ID of a given food item.
- * @apiSuccess {String} result A JSON array containing the matching element (or not)
+ * @apiParam {String} itemId Path param - ID of a given food item.
+ * @apiSuccess {JSON} result A JSON array containing the matching element (or not)
  * @apiSuccessExample {json} On success
  * [{
     "_id": "0002200001221",
@@ -279,6 +292,7 @@ function getFoodById(req, res) {
  * @api {post} /api/foods/:itemId/pricing Add pricing to an item
  * @apiName postPriceForFood
  * @apiVersion 1.0.0
+ * @apiParam {String} itemId Path param - ID of a given food item.
  * @apiParamExample {json} Request-Example:
  * {
  *   "price": 20,
@@ -286,7 +300,7 @@ function getFoodById(req, res) {
  *     "name": "Carrefour Antibes"
  *   }
  * }
- * @apiSuccess {String} result Pricing information
+ * @apiSuccess {JSON} result Pricing information
  * @apiSuccessExample {json} On success
  * {
  *     "item": {
