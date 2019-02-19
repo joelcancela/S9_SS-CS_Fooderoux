@@ -286,6 +286,13 @@
             "optional": true,
             "field": "contains",
             "description": "<p>Query param - Find the recipes containing the specified ingredients name</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "name",
+            "description": "<p>Query param - Find the recipes with name matching the specified name</p>"
           }
         ]
       }

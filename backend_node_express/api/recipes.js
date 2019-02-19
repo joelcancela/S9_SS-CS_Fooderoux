@@ -36,6 +36,7 @@ function getRecipeCount(req, res) {
  * @apiParam {Number} [page] Query param - Page number (1 by default)
  * @apiParam {String} [sortBy] Query param - (values: name, date)
  * @apiParam {String} [contains] Query param - Find the recipes containing the specified ingredients name
+ * @apiParam {String} [name] Query param - Find the recipes with name matching the specified name
  * @apiSuccess {JSON} result A JSON containing the number of recipes in database
  * @apiSuccessExample {json} On success
  * [
@@ -79,9 +80,21 @@ function getAllRecipes(req, res) {
         }
     }
     let searchObject = {};
+    let criterias = [];
     if (req.query.contains != null) {
         let regex = [new RegExp(".*" + req.query.contains + ".*", "i")];
-        searchObject = { "ingredients": { $in: regex } };
+        criterias.push({ "ingredients": { $in: regex } });
+    }
+    if (req.query.name != null) {
+        let regex = [new RegExp(".*" + req.query.name + ".*", "i")];
+        criterias.push({ "name": regex});
+    }
+    if (criterias.length > 0) {
+        if (criterias.length == 1) {
+            searchObject = criterias[0];
+        } else {
+            searchObject["$and"] = criterias;
+        }
     }
     recipeDb().find(searchObject).sort(sortObject).skip(pagesize * (n - 1)).limit(pagesize).toArray(function (err, docs) {
         assert.equal(err, null);
