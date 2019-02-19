@@ -86,7 +86,7 @@ function getAllRecipes(req, res) {
         criterias.push({ "ingredients": { $in: regex } });
     }
     if (req.query.name != null) {
-        let regex = [new RegExp(".*" + req.query.name + ".*", "i")];
+        let regex = new RegExp(".*" + req.query.name + ".*", "i");
         criterias.push({ "name": regex});
     }
     if (criterias.length > 0) {
