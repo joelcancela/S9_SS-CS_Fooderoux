@@ -61,7 +61,7 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        margin-top: 10px !important;
+        margin-top: 20px !important;
         margin-right: 20px;
     }
 

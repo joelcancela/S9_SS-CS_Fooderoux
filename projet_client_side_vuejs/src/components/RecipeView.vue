@@ -112,7 +112,8 @@
             };
         },
         props: {
-            filters: Object
+            filters: Object,
+            search: String
         },
         methods: {
             nextPage() {
@@ -157,43 +158,54 @@
             searchIngredient(ingredient) {
                 this.$emit("searchIngredient", ingredient);
             },
-            filterRecipes(page) {
-                this.page = page ? page : 1;
-                let newDisplayedRecipes = [];
-                if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient && this.filters.ingredient !== "") {
-                    client.getRecipesByName(this.filters.ingredient, this.page)
-                        .then((recipes) => {
-                            if (recipes.ok) return recipes.json();
+            filterByName(name) {
+                if(name) {
+                    client.getRecipes(this.page, name)
+                        .then((response) => {
+                            if (response.ok) return response.json();
                             else throw new Error("HTTP response status not code 200 as expected.");
                         })
-                        .then((recipesJson) => {
-                        newDisplayedRecipes = recipesJson;
-                        if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
-                            newDisplayedRecipes = newDisplayedRecipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax)
-                        }
-                        if(newDisplayedRecipes.length > 0) {
-                            this.displayedRecipes = newDisplayedRecipes;
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    });
-                }
-                else if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
-                    newDisplayedRecipes = this.recipes.filter((recipe)=>recipe.ingredients.length <= this.filters.ingredientsNumberMax);
-                    if(newDisplayedRecipes.length > 0) {
-                        this.displayedRecipes = newDisplayedRecipes;
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                        .then((responseJson) => {
+                            this.displayedRecipes = this.filterByIngredientsNumber(responseJson.filter((recipe)=>recipe.name));
+                            this.recipes = responseJson.filter((recipe)=>recipe.name);
+                        });
                 }
                 else {
                     this.getAllRecipes();
-                    return true;
+                    this.displayedRecipes = this.filterByIngredientsNumber(this.recipes);
                 }
+
+            },
+            filterByIngredientsName(name) {
+                if (this.filters.hasOwnProperty("ingredient") && this.filters.ingredient && this.filters.ingredient !== "") {
+                    client.getRecipesByIngredient(this.filters.ingredient, this.page, name)
+                        .then((response) => {
+                            if (response.ok) return response.json();
+                            else throw new Error("HTTP response status not code 200 as expected.");
+                            })
+                        .then((responseJson) => {
+                            this.displayedRecipes = this.filterByIngredientsNumber(responseJson.filter((recipe)=>recipe.name));
+                            this.recipes = responseJson.filter((recipe)=>recipe.name);
+                        });
+                }
+                else {
+                    this.filterByName(name);
+                }
+            },
+            filterByIngredientsNumber(newDisplayedRecipes) {
+                if (this.filters.hasOwnProperty("ingredientsNumberMax") && this.filters.ingredientsNumberMax && this.filters.ingredientsNumberMax !== "") {
+                    let result = newDisplayedRecipes.filter((recipe) => recipe.ingredients.length <= this.filters.ingredientsNumberMax);
+                    return result;
+                }
+                else {
+                    return newDisplayedRecipes;
+                }
+            },
+            async filterRecipes(page) {
+                let name = this.search === "" ? undefined : this.search;
+                this.page = page ? page : 1;
+                this.filterByIngredientsName(name);
+                return true;
             },
             getRecipePrice(recipe) {
                 client.getRecipePrice(recipe._id)
@@ -204,7 +216,8 @@
                     .then((response) => this.price = response.price);
             },
             getAllRecipes() {
-                client.getRecipes(this.page)
+                let name = this.search === "" ? undefined : this.search;
+                client.getRecipes(this.page, name)
                     .then(response => {
                         if (response.ok) return response.json();
                         else
@@ -230,6 +243,9 @@
         },
         watch: {
             filters: function() {
+                this.debouncedGetAnswer();
+            },
+            search: function () {
                 this.debouncedGetAnswer();
             }
         },

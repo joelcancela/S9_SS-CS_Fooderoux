@@ -29,16 +29,18 @@ export function getPriceFromItemID(itemID) {
     return get(URL + "/api/foods/" + itemID + "/price");
 }
 
-export function getRecipes(page) {
-    return get(URL + "/api/recipes?limit=8&page=" + page);
+export function getRecipes(page, name) {
+    let n = name ? "&name="+name : "" ;
+    return get(URL + "/api/recipes?limit=8&page=" + page + n);
 }
 
 export function createRecipe(name, ingredients) {
     return post(URL + "/api/recipes",{"name": name, "ingredients": ingredients});
 }
 
-export function getRecipesByName(ingredient, page) {
-    return get(URL + "/api/recipes?contains="+ingredient+"&page="+page);
+export function getRecipesByIngredient(ingredient, page, name) {
+    let n = name ? "&name="+name : "" ;
+    return get(URL + "/api/recipes?limit=8&contains="+ingredient+"&page="+page +n);
 }
 
 export function postPrice(itemID, price, name) {
