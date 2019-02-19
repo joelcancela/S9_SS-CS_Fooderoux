@@ -68,9 +68,12 @@
                         </v-label>
                     </v-layout>
 
-
                     <v-textarea label="Avis" color="#00cc00" v-model="comment" solo clearable hide-details></v-textarea>
-                    <v-btn class="white--text" color="#00cc00" @click="sendComment">Ajouter</v-btn>
+
+                    <v-layout style="margin-top: 5px">
+                        <v-text-field label="Nom d'utilisateur" color="#00cc00" v-model="username" solo clearable hide-details></v-text-field>
+                        <v-btn class="white--text" color="#00cc00" @click="sendComment">Ajouter</v-btn>
+                    </v-layout>
                 </v-card-text>
 
                 <v-divider></v-divider>
@@ -104,7 +107,8 @@
                 price: -1,
                 dialog: false,
                 selectedRecipe: {},
-                comment: ""
+                comment: "",
+                username: ""
             };
         },
         props: {
@@ -215,8 +219,9 @@
                 this.dialog = true;
             },
             sendComment() {
-                this.selectedRecipe.comments.push({username: "Moi", text: this.comment});
-                client.postComment(this.selectedRecipe._id, "Moi", this.comment);
+                const user = (this.username === "" || this.username === undefined || this.username === null) ? "Moi" : this.username;
+                this.selectedRecipe.comments.push({username: user, text: this.comment});
+                client.postComment(this.selectedRecipe._id, user, this.comment);
                 this.comment = "";
             }
         },
