@@ -169,7 +169,7 @@ function getRecipePrice(req, res) {
             res.status(400).send(err);
         } else {
             let item = docs[0];
-            if (item.ingredients != undefined && Array.isArray(item.ingedients) && item.ingredients.length > 0) {
+            if (item.ingredients != undefined && (item.ingredients instanceof Array) && item.ingredients.length > 0) {
                 item.ingredients.forEach(function (element) {
                     let reg = new RegExp(".*" + element + ".*", "i");
                     let searchObject = { $or: [{ product_name: reg }, { product_name_en: reg }, { product_name_fr: reg }] };
