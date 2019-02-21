@@ -79,8 +79,8 @@ export default {
         });
     },
     parsePosition(position) {
-      let lat = parseInt(position.lat);
-      let lng = parseInt(position.lng);
+      let lat = parseFloat(position.lat);
+      let lng = parseFloat(position.lng);
       return {
         lat,
         lng

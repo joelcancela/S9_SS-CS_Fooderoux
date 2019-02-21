@@ -103,43 +103,26 @@ export default {
     };
   },
   methods: {
-    isoFromCountry(country) {
-      switch (country) {
-        case "France":
-          return "fr";
-        case "Etats-Unis":
-          return "us";
-        case "Japon":
-          return "jp";
-        case "Mexique":
-          return "mx";
-        case "Chine":
-          return "cn";
-        case "Irlande":
-          return "ie";
-        case "Espagne":
-          return "es";
-        default:
-          return;
-      }
-    },
     changeToDiet() {
       this.coloredIcon = require("../assets/diet_Colored.png");
       this.placeholder = "Chercher un aliment";
       this.mainComponent = "ItemsGrid";
       this.filtersComponent = "Criterions";
+      this.search = "";
     },
     changeToRecipe() {
       this.coloredIcon = require("../assets/recipe-book_Colored.png");
       this.placeholder = "Chercher une recette";
       this.mainComponent = "RecipeView";
       this.filtersComponent = "RecipeFilters";
+      this.search = "";
     },
     changeToMap() {
       this.coloredIcon = require("../assets/store_Colored.png");
       this.placeholder = "Chercher un magasin";
       this.mainComponent = "MapView";
       this.filtersComponent = "";
+      this.search = "";
     },
     updateFilters(filters) {
       this.filters = filters;
