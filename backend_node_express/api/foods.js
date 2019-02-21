@@ -101,16 +101,20 @@ function getFoods(req, res, next) {
             criterias.push({ $or: [{ nutrition_grade_fr: { $in: grade_array }, nutrition_grades: { $in: grade_array } }] });
         }
     } if (req.query.ingredients != null) {
-        criterias.push({ $or: [{ ingredients_text_fr: reg, ingredients_text: reg, ingredients_tags: regArray, ingredients: regArray }] });
+        let reg = new RegExp(".*" + req.query.ingredients + ".*", "i");
+        criterias.push({ ingredients_text_fr: reg });
     } if (req.query.additives != null) {
-        let criteria_additives = (req.query.additives == "" ? {$in: [null, []]} : { '$regex': '^((?!' + req.query.additives + ').)*$', '$options': 'i' });
+        let criteria_additives = (req.query.additives == "" ? { $in: [null, []] } : { '$regex': '^((?!' + req.query.additives + ').)*$', '$options': 'i' });
         criterias.push({ additives: criteria_additives });
     } if (req.query.nutriments != null) {
         criterias.push({ nutriments: reg });
     } if (req.query.allergens != null) {
         criterias.push({ $or: [{ allergens_tags: reg, allergens: reg, allergens_from_ingredients: reg, traces: reg }] });
     } if (req.query.vitamins != null) {
-        criterias.push({ vitamins_tags: regArray });
+        let reg = new RegExp(req.query.vitamins, "i");
+        let regVitaminsArray = regArray;
+        regVitaminsArray.$regex = reg;
+        criterias.push({ vitamins_tags: regVitaminsArray });
     }
     let searchObject = {};
     if (criterias.length > 0) {
@@ -201,8 +205,8 @@ function getFoods(req, res, next) {
                 return;
             case "price":
                 foodDb().aggregate([
-                    { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
-                    { $sort: { "currentPrice.price": 1 } },
+                    { $addFields: { "currentPrice": { $ifNull: [{ $arrayElemAt: ["$pricing", -1] }, { price: 9999 }] } } },
+                    { $sort: { "currentPrice.price": 1, "_id": 1 } },
                     { $skip: (pagesize * (n - 1)) },
                     { $limit: pagesize }
                 ]).toArray(function (err, docs) {
