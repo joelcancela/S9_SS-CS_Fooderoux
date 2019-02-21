@@ -95,7 +95,7 @@ export default {
         return require('../assets/'+name.split(" ")[0].toLowerCase()+'.png');
     },
     openInfosWindow(index) {
-        this.stores[index]["pinOpen"] = {value: !this.stores[index]["pinOpen"].value};
+        this.displayedStores[index]["pinOpen"] = {value: !this.displayedStores[index]["pinOpen"].value};
     },
     generateIcon() {
       if (this.mapLoaded) {
