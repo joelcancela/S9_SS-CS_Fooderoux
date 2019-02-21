@@ -102,20 +102,18 @@ function getFoods(req, res, next) {
         }
     } if (req.query.ingredients != null) {
         let reg = new RegExp(".*" + req.query.ingredients + ".*", "i");
-        let regIngredientsArray = regArray;
-        regIngredientsArray.$in = [reg];
-        criterias.push({ $or: [{ ingredients_text_fr: reg, ingredients_text: reg, ingredients_tags: regIngredientsArray, ingredients: regIngredientsArray }] });
+        criterias.push({ ingredients_text_fr: reg });
     } if (req.query.additives != null) {
-        let criteria_additives = (req.query.additives == "" ? {$in: [null, []]} : { '$regex': '^((?!' + req.query.additives + ').)*$', '$options': 'i' });
+        let criteria_additives = (req.query.additives == "" ? { $in: [null, []] } : { '$regex': '^((?!' + req.query.additives + ').)*$', '$options': 'i' });
         criterias.push({ additives: criteria_additives });
     } if (req.query.nutriments != null) {
         criterias.push({ nutriments: reg });
     } if (req.query.allergens != null) {
         criterias.push({ $or: [{ allergens_tags: reg, allergens: reg, allergens_from_ingredients: reg, traces: reg }] });
     } if (req.query.vitamins != null) {
-        let reg = new RegExp(".*" + req.query.vitamins + ".*", "i");
+        let reg = new RegExp(req.query.vitamins, "i");
         let regVitaminsArray = regArray;
-        regVitaminsArray.$in = [reg];
+        regVitaminsArray.$regex = reg;
         criterias.push({ vitamins_tags: regVitaminsArray });
     }
     let searchObject = {};
