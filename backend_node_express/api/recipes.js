@@ -87,7 +87,7 @@ function getAllRecipes(req, res) {
     }
     if (req.query.name != null) {
         let regex = new RegExp(".*" + req.query.name + ".*", "i");
-        criterias.push({ "name": regex});
+        criterias.push({ "name": regex });
     }
     if (criterias.length > 0) {
         if (criterias.length == 1) {
@@ -188,7 +188,7 @@ function getRecipePrice(req, res) {
                                 }
                                 if (item.ingredients.indexOf(element) == item.ingredients.length - 1 && docs.indexOf(element_i) == docs.length - 1) {
                                     if (price.length > 0) {
-                                        res.send({ 'price': price.map(item => item.reduce((total, value) => total + value, 0) / item.length).filter(x => x).reduce((total, value) => total + value, 0) })
+                                        res.send({ 'price': Number.parseFloat(price.map(item => item.reduce((total, value) => total + value, 0) / item.length).filter(x => x).reduce((total, value) => total + value, 0).toFixed(2)) })
                                         return;
                                     } else {
                                         res.send({ 'price': 0.0 });
