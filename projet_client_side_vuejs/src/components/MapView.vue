@@ -16,16 +16,16 @@
       <gmap-marker
         v-for="(store, index) in displayedStores"
         :key="index"
-        @click="openInfosWindow()"
+        @click="openInfosWindow(index)"
         :clickable="true"
         :draggable="true"
         :position="parsePosition(store.location.coordinates)"
         :icon="generateIcon()"
       >
         <gmap-info-window
-          v-on:closeclick="openInfosWindow()"
-          :opened="openInfos"
-          ><v-img width="70px" :src="require('../assets/leclerc.png')"></v-img
+          v-on:closeclick="openInfosWindow(index)"
+          :opened="store.pinOpen.value"
+          ><v-img width="70px" :src="getStoreImage(store.name)"></v-img
           >{{store.name}}</gmap-info-window
         >
       </gmap-marker>
@@ -49,7 +49,7 @@ export default {
         lat: 0,
         lng: 0
       },
-      openInfos: false,
+      openInfos: [],
       mapLoaded: false,
       stores: [],
       displayedStores: []
@@ -74,8 +74,13 @@ export default {
             throw new Error("HTTP response status not code 200 as expected.");
         })
         .then(storesJson => {
-          this.stores = storesJson.stores;
-          this.displayedStores = storesJson.stores;
+          let tempStores = storesJson.stores;
+            for(let i = 0; i < tempStores.length; i++){
+                tempStores[i]["pinOpen"] = {value: false};
+            }
+          this.stores = tempStores;
+          this.displayedStores = tempStores;
+
         });
     },
     parsePosition(position) {
@@ -86,8 +91,11 @@ export default {
         lng
       };
     },
-    openInfosWindow() {
-      this.openInfos = !this.openInfos;
+    getStoreImage(name) {
+        return require('../assets/'+name.split(" ")[0].toLowerCase()+'.png');
+    },
+    openInfosWindow(index) {
+        this.stores[index]["pinOpen"] = {value: !this.stores[index]["pinOpen"].value};
     },
     generateIcon() {
       if (this.mapLoaded) {
