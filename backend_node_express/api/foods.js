@@ -205,8 +205,8 @@ function getFoods(req, res, next) {
                 return;
             case "price":
                 foodDb().aggregate([
-                    { $addFields: { "currentPrice": { $arrayElemAt: ["$pricing", -1] } } },
-                    { $sort: { "currentPrice.price": 1 } },
+                    { $addFields: { "currentPrice": { $ifNull: [{ $arrayElemAt: ["$pricing", -1] }, { price: 9999 }] } } },
+                    { $sort: { "currentPrice.price": 1, "_id": 1 } },
                     { $skip: (pagesize * (n - 1)) },
                     { $limit: pagesize }
                 ]).toArray(function (err, docs) {
