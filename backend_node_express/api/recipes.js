@@ -162,48 +162,58 @@ function getRecipeById(req, res) {
  */
 function getRecipePrice(req, res) {
     let id = req.params.recipeId;
-    let price = [];
-
-    recipeDb().find(ObjectId(id)).toArray(function (err, docs) {
-        if (err != null) {
-            res.status(400).send(err);
+    getRecipeWithIdPromise(id).then(function (item) {
+        if (item.ingredients != undefined && (item.ingredients instanceof Array) && item.ingredients.length > 0) {
+            let promises = [];
+            item.ingredients.forEach(function (element) {
+                promises.push(getIngredientAvgPriceForIngredient(element));
+            });
+            Promise.all(promises).then(function (values) {
+                if (values.length > 0) {
+                    res.send({ 'price': Number.parseFloat(values.map(item => item.reduce((total, value) => total + value, 0) / item.length).filter(x => x).reduce((total, value) => total + value, 0).toFixed(2)) })
+                } else {
+                    res.send({ 'price': 0.0 });
+                }
+            });
         } else {
-            let item = docs[0];
-            if (item.ingredients != undefined && (item.ingredients instanceof Array) && item.ingredients.length > 0) {
-                item.ingredients.forEach(function (element) {
-                    let reg = new RegExp(".*" + element + ".*", "i");
-                    let searchObject = { $or: [{ product_name: reg }, { product_name_en: reg }, { product_name_fr: reg }] };
-                    foodDb().find(searchObject).toArray(function (err, docs) {
-                        price.push([]);
-                        if (item.ingredients.indexOf(element) == item.ingredients.length - 1 && docs.length == 0) {
-                            res.send({ 'price': 0.0 });
-                            return;
-                        }
-                        if (err == null && docs.length > 0) {
-                            docs.forEach(function (element_i) {
-                                if (element_i.pricing != undefined && element_i.pricing.length > 0) {
-                                    element_i.pricing.forEach(function (pricing) {
-                                        price[item.ingredients.indexOf(element)].push(pricing.price);
-                                    })
-                                }
-                                if (item.ingredients.indexOf(element) == item.ingredients.length - 1 && docs.indexOf(element_i) == docs.length - 1) {
-                                    if (price.length > 0) {
-                                        res.send({ 'price': Number.parseFloat(price.map(item => item.reduce((total, value) => total + value, 0) / item.length).filter(x => x).reduce((total, value) => total + value, 0).toFixed(2)) })
-                                        return;
-                                    } else {
-                                        res.send({ 'price': 0.0 });
-                                        return;
-                                    }
-                                }
-                            });
-                        }
-                    });
-                });
-            } else {
-                res.send({ 'price': 0.0 });
-                return;
-            }
+            res.send({ 'price': 0.0 });
         }
+    }, err => {
+        res.status(400).send(err);
+    });
+}
+
+function getRecipeWithIdPromise(id) {
+    return new Promise(function (resolve, reject) {
+        recipeDb().find(ObjectId(id)).toArray(function (err, docs) {
+            if (err != null) {
+                reject(err);
+            }
+            if (docs[0] != undefined) {
+                resolve(docs[0]);
+            } else {
+                reject("No such recipe");
+            }
+        });
+    });
+}
+
+function getIngredientAvgPriceForIngredient(element) {
+    return new Promise(function (resolve, reject) {
+        let reg = new RegExp(".*" + element + ".*", "i");
+        let searchObject = { $or: [{ product_name: reg }, { product_name_en: reg }, { product_name_fr: reg }] };
+        foodDb().find(searchObject).toArray(function (err, docs) {
+            if (err != null) {
+                reject(err);
+            }
+            let avg = [];
+            docs.forEach(function (element) {
+                if (element.pricing != undefined && element.pricing.length > 0) {
+                        avg.push(element.pricing[element.pricing.length-1].price);
+                }
+            });
+            resolve(avg);
+        });
     });
 }
 
