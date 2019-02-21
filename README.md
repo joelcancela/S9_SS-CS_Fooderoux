@@ -56,3 +56,20 @@ doc/index.html
 * CANCELA VAZ Joël
 * CASAGRANDE Guillaume
 * ROUSSEAU Nikita
+
+### Distribution of tasks
+
+#### Front-end
+
+* Display of the aliments, recipes, stores and their locations on the map - Pierre
+* Display of the aliments, their characteristics, filters (and sorting), price and comments on recipes - Guillaume
+
+#### Back-end
+
+* Implementation of a middleware to match stores with their cities and GPS location via OpenStreetMap - Nikita
+* Implementation of everything about stores and pricing. - Nikita
+
+* Connection to MongoDb - Joël
+* Creation of the food API and model - Joël
+* Creation of the recipe API - Joël
+* Splitted the application into modules - Joël
