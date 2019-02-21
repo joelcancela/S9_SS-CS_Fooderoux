@@ -128,8 +128,8 @@ export default {
       this.filters = filters;
     },
     autoSearch(ingredient) {
-        this.search = ingredient;
         this.changeToDiet();
+        this.search = ingredient;
     }
   }
 };
