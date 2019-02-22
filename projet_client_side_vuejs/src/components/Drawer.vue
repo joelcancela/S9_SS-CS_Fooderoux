@@ -54,6 +54,10 @@
         padding-top: 5%;
         border-bottom-style: solid;
         border-bottom-color: white;
+        cursor: pointer;
+    }
+    .item:hover {
+        background-color: lightgreen;
     }
     .catName {
         color: white;
