@@ -129,6 +129,7 @@ function getFoods(req, res, next) {
         switch (req.query.sortBy) {
             case "name":
                 foodDb().aggregate([
+                    { $match: searchObject},
                     {
                         $addFields: {
                             "product_name_fr": {
@@ -186,11 +187,12 @@ function getFoods(req, res, next) {
                 return;
             case "nutriscore":
                 foodDb().aggregate([
+                    { $match: searchObject},
                     { $addFields: { nutrition_grade_fr: { $ifNull: ["$nutrition_grade_fr", 'x'] } } },
                     { $sort: { nutrition_grade_fr: 1 } },
                     { $skip: (pagesize * (n - 1)) },
                     { $limit: pagesize },
-                ]).toArray(function (err, docs) {
+                ], { allowDiskUse: true }).toArray(function (err, docs) {
                     assert.equal(err, null);
                     if (req.query.debug != null) {
                         res.send(docs);
@@ -205,11 +207,12 @@ function getFoods(req, res, next) {
                 return;
             case "price":
                 foodDb().aggregate([
+                    { $match: searchObject},
                     { $addFields: { "currentPrice": { $ifNull: [{ $arrayElemAt: ["$pricing", -1] }, { price: 9999 }] } } },
                     { $sort: { "currentPrice.price": 1, "_id": 1 } },
                     { $skip: (pagesize * (n - 1)) },
                     { $limit: pagesize }
-                ]).toArray(function (err, docs) {
+                ], { allowDiskUse: true }).toArray(function (err, docs) {
                     assert.equal(err, null);
                     if (req.query.debug != null) {
                         res.send(docs);
