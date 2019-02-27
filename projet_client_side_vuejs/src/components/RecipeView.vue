@@ -159,21 +159,15 @@
                 this.$emit("searchIngredient", ingredient);
             },
             filterByName(name) {
-                if(name) {
-                    client.getRecipes(this.page, name)
-                        .then((response) => {
-                            if (response.ok) return response.json();
-                            else throw new Error("HTTP response status not code 200 as expected.");
-                        })
-                        .then((responseJson) => {
-                            this.displayedRecipes = this.filterByIngredientsNumber(responseJson.filter((recipe)=>recipe.name));
-                            this.recipes = responseJson.filter((recipe)=>recipe.name);
-                        });
-                }
-                else {
-                    this.getAllRecipes();
-                    this.displayedRecipes = this.filterByIngredientsNumber(this.recipes);
-                }
+                client.getRecipes(this.page, name)
+                    .then((response) => {
+                        if (response.ok) return response.json();
+                        else throw new Error("HTTP response status not code 200 as expected.");
+                    })
+                    .then((responseJson) => {
+                        this.displayedRecipes = this.filterByIngredientsNumber(responseJson.filter((recipe)=>recipe.name));
+                        this.recipes = responseJson.filter((recipe)=>recipe.name);
+                    });
 
             },
             filterByIngredientsName(name) {
@@ -201,7 +195,7 @@
                     return newDisplayedRecipes;
                 }
             },
-            async filterRecipes(page) {
+            filterRecipes(page) {
                 let name = this.search === "" ? undefined : this.search;
                 this.page = page ? page : 1;
                 this.filterByIngredientsName(name);
