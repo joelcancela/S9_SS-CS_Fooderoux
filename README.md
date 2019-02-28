@@ -50,6 +50,17 @@ npm install apidoc -g # Install apidoc
 
 doc/index.html
 
+### Create your own database
+
+* Get a MongoDB Database (you can get one at mlab.com)
+* Install [Mongo shell](https://docs.mongodb.com/manual/mongo/)
+* Go to folder ``database_setup``
+* Type the following commands:
+    * ``mongorestore  -h <hostname> -d <database_name> -u <user> -p <password> --collection france --drop --gzip france.bson.gz``
+    * ``mongorestore -h <hostname> -d <database_name> -u <user> -p <password> recipes.bson``
+* Edit backend_node_express\mongodb\mongo.js
+    * Change the following variables values: "url", "dbName"
+
 ## Authors
 
 * BONNY Pierre
