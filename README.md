@@ -1,6 +1,6 @@
 # S9_SS/CS_Fooderoux
 
-Projet combining the Server Side and the Client Side web courses. Full-stack web app about listing food and their characteristics (inspired by Open Food Facts).
+Project combining the Server Side and the Client Side web courses. Full-stack web app about listing food and their characteristics (inspired by Open Food Facts).
 
 ## Built with
 
