@@ -1,0 +1,10 @@
+{
+    "name": "Fooderoux API",
+    "version": "1.0.0",
+    "title": "Fooderoux API",
+    "url": "https://server-side-food-backend.herokuapp.com",
+    "template": {
+        "withCompare": false,
+        "withGenerator": true
+    }
+}
